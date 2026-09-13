@@ -474,6 +474,12 @@ async function syncMachineStatus() {
                 const myTotal = balance + pointsAmount + currentWonAmount + bankAmount;
                 if (data.currentBalance !== myTotal) {
                     balance += (data.currentBalance - myTotal);
+                    if (balance < 0) {
+                        balance = Math.max(0, data.currentBalance);
+                        pointsAmount = 0;
+                        currentWonAmount = 0;
+                        bankAmount = 0;
+                    }
                     updateDisplays();
                 }
             }
