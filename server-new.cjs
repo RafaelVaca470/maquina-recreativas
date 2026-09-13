@@ -58,7 +58,7 @@ let machineState = {
     queue: [],
     currentMachineBalance: 0,
     lastSpin: null
-});
+};
 
 function addLog(user, action, amount, balanceAfter, note) {
     const entry = {
