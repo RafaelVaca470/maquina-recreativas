@@ -28,20 +28,7 @@ const SYMBOLS = [
 ];
 
 // Ocultamos la declaración original
-/*
-    { id: 'MARY', label: 'MARY', prob: 5, multi: 100, type: 'wild' }, // Corona Top y Comodín
-    { id: 'RAFAEL', label: 'RAFAEL', prob: 7, multi: 0, type: 'fireshot' }, // Bola de fuego Fire Shot
-    { id: 'MAYTE', label: 'MAYTE', prob: 9, multi: 60, type: 'flower' }, // Flores (Scatter 10 Juegos Gratis)
-    { id: 'CHARI', label: 'CHARI', prob: 12, multi: 30, type: 'std' }, // Orquídea Magenta
-    { id: 'SUSANA', label: 'SUSANA', prob: 12, multi: 30, type: 'std' }, // Esmeralda
-    { id: 'FRANCISCO', label: 'FRANCISCO', prob: 12, multi: 30, type: 'std' }, // Zafiro
-    { id: 'ROBER', label: 'ROBER', prob: 14, multi: 20, type: 'std' }, // Cobalto
-    { id: 'EVA', label: 'EVA', prob: 14, multi: 20, type: 'std' }, // Coral
-    { id: 'AURORA', label: 'AURORA', prob: 16, multi: 15, type: 'std' }, // Rubí
-    { id: 'ANTONIO', label: 'ANTONIO', prob: 16, multi: 15, type: 'std' }, // Ámbar
-    { id: 'ISABEL', label: 'ISABEL', prob: 18, multi: 10, type: 'std' }, // Amatista
-    { id: 'CARMEN', label: 'CARMEN', prob: 18, multi: 10, type: 'std' } // Turquesa
-];
+
 
 // Opciones de Apuesta en Créditos (1 € = 100 Créditos)
 // 5 = 0.05€ | 10 = 0.10€ | 20 = 0.20€ | 50 = 0.50€ | 100 = 1.00€ | 200 = 2.00€
