@@ -650,7 +650,7 @@ function buildReels(initial = false) {
         strip.style.transition = 'none';
 
         // Símbolos nuevos que quedarán al final (posiciones 0 a 3, arriba)
-        const stackMayteThisReel = isFreeSpinsMode && Math.random() < 0.15; // Muy difícil que salgan de nuevo
+        const stackMayteThisReel = isFreeSpinsMode && Math.random() < 0.02; // Ajustado a 2% para evitar bucles infinitos y cumplir 'ES MUY DIFICIL'
         for (let i = 0; i < 4; i++) {
             let symData;
 

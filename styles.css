@@ -627,6 +627,27 @@ body {
     transition: transform 2.8s cubic-bezier(0.12, 0.8, 0.15, 1);
 }
 
+.win-lines-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.win-line-pulse {
+    animation: winLinePulse 1.2s infinite;
+}
+
+@keyframes winLinePulse {
+    0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); opacity: 0.8; }
+    50% { filter: drop-shadow(0 0 15px rgba(255,255,255,1)); opacity: 1; }
+    100% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); opacity: 0.8; }
+}
+
+
 /* =======================================================
    ESTILO DE SÍMBOLOS PERSONALIZADOS (INSIGNIAS DE LUJO)
    ======================================================= */
