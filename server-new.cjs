@@ -671,7 +671,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function startServer() {
-  const MONGODB_URI = process.env.MONGODB_URI || null;
+  const MONGODB_URI = "mongodb+srv://rvacarmo_db_user:utJH79FOYsvsFo2t@recreativa.fukrjf6.mongodb.net/?appName=Recreativa";
   let db = null;
   if (MONGODB_URI) {
     try {
