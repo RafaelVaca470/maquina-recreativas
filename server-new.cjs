@@ -714,5 +714,4 @@ async function startServer() {
     console.log(`=======================================================`);
 });
 
-}   s t a r t S e r v e r ( ) ;  
- 
+} startServer();
