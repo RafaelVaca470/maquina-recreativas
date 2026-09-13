@@ -594,8 +594,19 @@ function createSymbolElement(symbolData) {
         `;
     } else if (symbolData.id === 'RAFAEL') {
         // Bola de fuego animada con Rafael y premio en créditos (activa el juego de pirámide)
-        const possibleBallValues = [100, 200, 500, 1000, 2000, 5000, 20000];
-        const val = possibleBallValues[Math.floor(Math.random() * possibleBallValues.length)];
+        const weightedBalls = [
+            {v: 100, p: 55}, 
+            {v: 200, p: 30}, 
+            {v: 500, p: 10}, 
+            {v: 1000, p: 4}, 
+            {v: 2000, p: 1}
+        ];
+        let rand = Math.random() * 100;
+        let val = 100;
+        for(let w of weightedBalls) {
+            if(rand < w.p) { val = w.v; break; }
+            rand -= w.p;
+        }
         el.dataset.ballValue = val;
         el.innerHTML = `
             <div class="sym-fireshot-rafael">
