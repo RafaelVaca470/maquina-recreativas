@@ -13,6 +13,22 @@ function isAnyAdminPassword(pass) {
 
 // Configuración de Símbolos y Jerarquía Personalizada
 const SYMBOLS = [
+    { id: 'MARY', label: 'MARY', prob: 6, multi: 0, type: 'wild' }, // Comodín
+    { id: 'RAFAEL', label: 'RAFAEL', prob: 9, multi: 0, type: 'fireshot' }, // Bola de fuego
+    { id: 'MAYTE', label: 'MAYTE', prob: 4, multi: 0, type: 'flower' }, // Scatter
+    { id: 'CHARI', label: 'CHARI', prob: 18, multi: 0, type: 'std' }, 
+    { id: 'SUSANA', label: 'SUSANA', prob: 12, multi: 0, type: 'std' }, 
+    { id: 'FRANCISCO', label: 'FRANCISCO', prob: 18, multi: 0, type: 'std' }, 
+    { id: 'ROBER', label: 'ROBER', prob: 20, multi: 0, type: 'std' }, 
+    { id: 'EVA', label: 'EVA', prob: 20, multi: 0, type: 'std' }, 
+    { id: 'AURORA', label: 'AURORA', prob: 24, multi: 0, type: 'std' }, 
+    { id: 'ANTONIO', label: 'ANTONIO', prob: 24, multi: 0, type: 'std' }, 
+    { id: 'ISABEL', label: 'ISABEL', prob: 26, multi: 0, type: 'std' }, 
+    { id: 'CARMEN', label: 'CARMEN', prob: 26, multi: 0, type: 'std' }
+];
+
+// Ocultamos la declaración original
+/*
     { id: 'MARY', label: 'MARY', prob: 5, multi: 100, type: 'wild' }, // Corona Top y Comodín
     { id: 'RAFAEL', label: 'RAFAEL', prob: 7, multi: 0, type: 'fireshot' }, // Bola de fuego Fire Shot
     { id: 'MAYTE', label: 'MAYTE', prob: 9, multi: 60, type: 'flower' }, // Flores (Scatter 10 Juegos Gratis)
@@ -53,7 +69,7 @@ let forceRafaelBonusNextSpin = false;
 let forceMayteBonusNextSpin = false;
 
 // Jackpots en Créditos (Mega: 50.000, Super: ~26.940, Grand: 2.500, Major: 1.250, Minor: 500)
-let superJackpotAccum = 26940;
+let superJackpotAccum = 20000;
 
 // Estado del usuario y multijugador
 let currentUser = null; // { username, city, zip, pin, credits }
@@ -180,7 +196,7 @@ function playWarningBeep() {
         gain.connect(audioCtx.destination);
         osc.start();
         osc.stop(audioCtx.currentTime + 0.12);
-    } catch(e) {}
+    } catch(e) { alert('Error de conexión o de servidor: ' + e.message); }
 }
 
 // -------------------------------------------------------------
@@ -634,7 +650,7 @@ function buildReels(initial = false) {
         strip.style.transition = 'none';
 
         // Símbolos nuevos que quedarán al final (posiciones 0 a 3, arriba)
-        const stackMayteThisReel = isFreeSpinsMode && Math.random() < 0.65;
+        const stackMayteThisReel = isFreeSpinsMode && Math.random() < 0.15; // Muy difícil que salgan de nuevo
         for (let i = 0; i < 4; i++) {
             let symData;
 
@@ -772,7 +788,12 @@ async function spin() {
         }
         pointsAmount -= currentBet;
         totalBetsSession += currentBet;
-        superJackpotAccum += 1;
+        if (!window.superJackpotSpins) window.superJackpotSpins = 0;
+        window.superJackpotSpins++;
+        if (window.superJackpotSpins >= 4 && superJackpotAccum < 40000) {
+            superJackpotAccum += 1;
+            window.superJackpotSpins = 0;
+        }
         updateDisplays();
         updateJackpots();
     }
@@ -915,14 +936,16 @@ async function checkResults() {
         }
 
         if (matchCount >= 3) {
+            if (targetSym === 'MAYTE' || targetSym === 'RAFAEL') return;
+
             let linePoints = 0;
-            if (targetSym === 'MAYTE') {
-                linePoints = matchCount === 3 ? 15 : matchCount === 4 ? 50 : 250;
+            if (targetSym === 'SUSANA') {
+                linePoints = matchCount === 3 ? 25 : matchCount === 4 ? 35 : 50;
             } else {
-                linePoints = matchCount === 3 ? 5 : matchCount === 4 ? 10 : 25;
+                linePoints = matchCount === 3 ? 5 : matchCount === 4 ? 10 : 15;
             }
 
-            linePoints = Math.round(linePoints * (currentBet / 20));
+            linePoints = Math.round(linePoints * (currentBet / 5));
             totalWinPts += linePoints;
 
             winningLines.push({
@@ -942,9 +965,11 @@ async function checkResults() {
         updateDisplays();
 
         mainSpinTitle.textContent = "ACUMULAR";
-        mainSpinSub.textContent = `+${totalWinPts} CR`;
+        mainSpinSub.textContent = "PREMIO";
         btnPhysSpin.classList.add('mode-acumular');
-        btnPhysSpin.classList.remove('pulsing-btn');
+        btnPhysSpin.classList.remove('active-pressed');
+        btnPhysSpin.classList.add('pulsing-btn');
+        tickerEl.textContent = `¡PREMIO: ${totalWinPts} CR! PULSA 'ACUMULAR' O ESPERA.`;
 
         drawWinningLines(winningLines);
         cycleWinningLineAnnouncements(winningLines, totalWinPts);
@@ -963,6 +988,17 @@ async function checkResults() {
         isBonus: false,
         isFreeSpins: isFreeSpinsMode
     });
+}
+
+async function syncSpinToServer(spinData) {
+    if (!isMyTurn()) return;
+    try {
+        await fetch('/api/machine/sync-spin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(spinData)
+        });
+    } catch(e) {}
 }
 
 function getGridIds(screen) {
@@ -1155,7 +1191,8 @@ async function startFireShotPyramidBonus(initialBalls) {
             playCoinSound();
             bonusRespinsLeft = 3;
             bonusSpinsLeftEl.textContent = 3;
-            const ballVal = [100, 200, 500, 1000, 2000][Math.floor(Math.random() * 5)];
+            const multiBall = currentBet / 200;
+            const ballVal = Math.round([100*multiBall, 200*multiBall, 500*multiBall, 100*multiBall, 200*multiBall, 500*multiBall][Math.floor(Math.random() * 6)]);
             totalBonusAccum += ballVal;
             bonusWinAmountEl.textContent = `${totalBonusAccum} CR`;
 
