@@ -468,8 +468,11 @@ async function syncMachineStatus() {
 
         // Sincronizar saldo de la máquina si tengo el turno
         if (isMyTurn() && typeof data.currentBalance === 'number' && !isSpinning) {
-            balance = data.currentBalance;
-            updateDisplays();
+            const myTotal = balance + pointsAmount + currentWonAmount;
+            if (data.currentBalance !== myTotal) {
+                balance += (data.currentBalance - myTotal);
+                updateDisplays();
+            }
         }
 
     } catch (e) {
@@ -975,17 +978,6 @@ async function checkResults() {
         isBonus: false,
         isFreeSpins: isFreeSpinsMode
     });
-}
-
-async function syncSpinToServer(spinData) {
-    if (!isMyTurn()) return;
-    try {
-        await fetch('/api/machine/sync-spin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(spinData)
-        });
-    } catch(e) {}
 }
 
 function getGridIds(screen) {
