@@ -1017,7 +1017,7 @@ function drawWinningLines(winningLines) {
         const points = wl.line.map(pos => {
             const x = (pos.c * 20) + 10;
             const y = (pos.r * 25) + 12.5;
-            return `${x}%,${y}%`;
+            return `${x},${y}`;
         }).join(' ');
 
         polyline.setAttribute('points', points);
