@@ -1,4 +1,4 @@
-﻿// =======================================================
+// =======================================================
 // FIRE SHOT BAR - UNIDESA RECREATIVO ENTRE AMIGOS (CRÉDITOS VIRTUALES)
 // 1 € = 100 Créditos Recreativos (CR)
 // Multijugador: Turno Único, Cola de Espera, Modo Espectador y Control de Caja
@@ -18,7 +18,7 @@ const SYMBOLS = [
     { id: 'MAYTE', label: 'MAYTE', prob: 4, multi: 0, type: 'flower' }, // Scatter
     { id: 'CHARI', label: 'CHARI', prob: 18, multi: 0, type: 'std' }, 
     { id: 'SUSANA', label: 'SUSANA', prob: 12, multi: 0, type: 'std' }, 
-    { id: 'FRANCISCO', label: 'FRANCISCO', prob: 18, multi: 0, type: 'std' }, 
+    { id: 'FRAN', label: 'FRAN', prob: 18, multi: 0, type: 'std' }, 
     { id: 'ROBER', label: 'ROBER', prob: 20, multi: 0, type: 'std' }, 
     { id: 'EVA', label: 'EVA', prob: 20, multi: 0, type: 'std' }, 
     { id: 'AURORA', label: 'AURORA', prob: 24, multi: 0, type: 'std' }, 
@@ -129,7 +129,9 @@ function playBonusSpinSound() {
 }
 
 function playReelStopSound(index) {
-    playTone(180 + index * 45, 'triangle', 0.15, 0.12);
+    if (isAudioMuted || !audioCtx) return;
+    playTone(80 - (index * 5), 'sine', 0.2, 0.4); 
+    playTone(200, 'square', 0.05, 0.05); 
 }
 
 function playCoinSound() {
@@ -257,6 +259,7 @@ const btnResumeGame = document.getElementById('btn-resume-game');
 const spectatorBlockedModal = document.getElementById('spectator-blocked-modal');
 const privatePlayerName = document.getElementById('private-player-name');
 const btnJoinQueuePrivate = document.getElementById('btn-join-queue-private');
+const btnAdminBypass = document.getElementById('btn-admin-bypass');
 const btnMyAccount = document.getElementById('btn-my-account');
 
 // Barra Multijugador
@@ -604,17 +607,21 @@ function createSymbolElement(symbolData) {
         `;
     } else if (symbolData.id === 'RAFAEL') {
         // Bola de fuego animada con Rafael y premio en créditos (activa el juego de pirámide)
+        const multiBall = currentBet / 200;
         const weightedBalls = [
-            {v: 100, p: 55}, 
-            {v: 200, p: 30}, 
-            {v: 500, p: 10}, 
-            {v: 1000, p: 4}, 
-            {v: 2000, p: 1}
+            {v: 100 * multiBall, p: 50}, 
+            {v: 200 * multiBall, p: 25}, 
+            {v: 400 * multiBall, p: 12}, 
+            {v: 600 * multiBall, p: 8},
+            {v: 1000 * multiBall, p: 3},
+            {v: 1200 * multiBall, p: 1.5},
+            {v: 2000 * multiBall, p: 0.4},
+            {v: 4000 * multiBall, p: 0.1}
         ];
         let rand = Math.random() * 100;
-        let val = 100;
+        let val = 100 * multiBall;
         for(let w of weightedBalls) {
-            if(rand < w.p) { val = w.v; break; }
+            if(rand < w.p) { val = Math.round(w.v); break; }
             rand -= w.p;
         }
         el.dataset.ballValue = val;
@@ -630,7 +637,7 @@ function createSymbolElement(symbolData) {
         // Nombres estándar: cada uno usa su badge de neón específico con su color propio
         const id = symbolData.id.toLowerCase();
         const label = symbolData.label;
-        const extraClass = (id === 'francisco') ? 'name-francisco' : (id === 'antonio') ? 'name-antonio' : '';
+        const extraClass = (id === 'fran') ? 'name-FRAN' : (id === 'antonio') ? 'name-antonio' : '';
         el.innerHTML = `
             <div class="sym-badge-${id}">
                 <span class="badge-name-std ${extraClass}">${label}</span>
@@ -821,14 +828,15 @@ async function spin() {
 
     const spinPromises = strips.map((strip, index) => {
         return new Promise(resolve => {
+            const stopDelay = 800 + (index * 400); // 800ms, 1200ms, 1600ms, 2000ms, 2400ms
             setTimeout(() => {
-                strip.style.transition = 'transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.05)';
+                strip.style.transition = `transform ${stopDelay / 1000}s cubic-bezier(0.15, 0.85, 0.3, 1.08)`;
                 strip.style.transform = 'translateY(0)';
                 setTimeout(() => {
                     playReelStopSound(index);
                     resolve();
-                }, 470);
-            }, index * 90);
+                }, stopDelay + 20);
+            }, 10);
         });
     });
 
@@ -1070,7 +1078,7 @@ function getSymbolColor(symId) {
     if (symId === 'MAYTE') return '#ff66aa';
     if (symId === 'CHARI') return '#ff00aa';
     if (symId === 'SUSANA') return '#00ff88';
-    if (symId === 'FRANCISCO') return '#3399ff';
+    if (symId === 'FRAN') return '#3399ff';
     if (symId === 'ROBER') return '#5588ff';
     if (symId === 'EVA') return '#ff6633';
     if (symId === 'AURORA') return '#ff4da6';
@@ -1193,7 +1201,8 @@ async function startFireShotPyramidBonus(initialBalls) {
             bonusRespinsLeft = 3;
             bonusSpinsLeftEl.textContent = 3;
             const multiBall = currentBet / 200;
-            const ballVal = Math.round([100*multiBall, 200*multiBall, 500*multiBall, 100*multiBall, 200*multiBall, 500*multiBall][Math.floor(Math.random() * 6)]);
+            const ballVals = [100, 200, 400, 600, 1000, 1200, 2000];
+            const ballVal = Math.round(ballVals[Math.floor(Math.random() * ballVals.length)] * multiBall);
             totalBonusAccum += ballVal;
             bonusWinAmountEl.textContent = `${totalBonusAccum} CR`;
 
@@ -1267,7 +1276,7 @@ function buildPaytable() {
             <li>🌸🌸🌸 <strong style="color:#ff80b3;">MAYTE</strong>: 3x (15 CR) &nbsp;|&nbsp; 4x (50 CR) &nbsp;|&nbsp; 5x (250 CR)</li>
             <li><strong style="color:#ff33bb;">CHARI</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
             <li><strong style="color:#a3ffcf;">SUSANA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#b3d9ff;">FRANCISCO</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
+            <li><strong style="color:#b3d9ff;">FRAN</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
             <li><strong style="color:#c2d4ff;">ROBER</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
             <li><strong style="color:#ffd1b3;">EVA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
             <li><strong style="color:#ffb3d9;">AURORA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
@@ -1297,10 +1306,17 @@ function setupEventListeners() {
         handleMainSpinOrAcumular();
     });
 
-    if (bonusSpinBtn) {
-        bonusSpinBtn.addEventListener('click', () => {
-            initAudio();
+    if (btnJoinQueuePrivate) {
+        btnJoinQueuePrivate.addEventListener('click', () => {
             playButtonClickSound();
+            mpQueueBtn.click();
+        });
+    }
+
+    if (btnAdminBypass) {
+        btnAdminBypass.addEventListener('click', () => {
+            playButtonClickSound();
+            pinModal.classList.remove('hidden');
         });
     }
 

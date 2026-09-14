@@ -552,7 +552,7 @@ body {
 
 .fs-counter-badge {
     font-family: 'Orbitron', monospace, sans-serif;
-    font-size: 0.82rem;
+    font-size: 0.65rem;
     font-weight: 900;
     color: #ffffff;
     text-shadow: 0 0 8px #ff0077, 0 0 14px #ffdd00;
@@ -813,7 +813,7 @@ body {
 /* NOMBRES ESTÁNDAR CENTRADOS EN EL CUADRO */
 .badge-name-std {
     font-family: 'Cinzel', serif;
-    font-size: 0.82rem;
+    font-size: 0.65rem;
     font-weight: 900;
     color: #ffffff;
     letter-spacing: 0.5px;
@@ -828,7 +828,7 @@ body {
     width: 100%;
 }
 
-.name-francisco {
+.name-FRAN {
     font-size: 0.58rem !important;
     letter-spacing: 0px !important;
 }
@@ -854,8 +854,8 @@ body {
 }
 .sym-badge-susana .badge-name-std { color: #a3ffcf; }
 
-/* FRANCISCO - NARANJA VIVO */
-.sym-badge-francisco {
+/* FRAN - NARANJA VIVO */
+.sym-badge-FRAN {
     background: linear-gradient(135deg, #331200 0%, #662400 50%, #331200 100%);
     border: 2px solid #ff5500;
     border-radius: 8px;
@@ -868,7 +868,7 @@ body {
     justify-content: center;
     box-shadow: 0 0 8px rgba(255, 85, 0, 0.5);
 }
-.sym-badge-francisco .badge-name-std { color: #ffcc99; }
+.sym-badge-FRAN .badge-name-std { color: #ffcc99; }
 
 /* AURORA - RUBÍ ROSA */
 .sym-badge-aurora {
@@ -1887,7 +1887,7 @@ body {
 }
 
 .mega-unified-label {
-    font-size: 0.82rem;
+    font-size: 0.65rem;
     font-weight: 900;
     color: #ffcc00;
     width: 52px;
@@ -2153,7 +2153,7 @@ body {
     border: 1.5px solid #ffcc00;
     color: #fff;
     font-weight: 900;
-    font-size: 0.82rem;
+    font-size: 0.65rem;
     padding: 8px 14px;
     border-radius: 6px;
     cursor: pointer;
@@ -2206,7 +2206,7 @@ body {
     text-align: left;
 }
 .block-title {
-    font-size: 0.82rem;
+    font-size: 0.65rem;
     font-weight: 900;
     color: #ffea75;
     letter-spacing: 1px;
