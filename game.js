@@ -1213,8 +1213,37 @@ async function startFireShotPyramidBonus(initialBalls) {
         }
 
         if (bonusRespinsLeft <= 0) {
-            tickerEl.textContent = `¡FIN DEL BONUS! PREMIO TOTAL GANADO: +${totalBonusAccum} CR`;
-            playWinSound();
+            const mult = currentBet / 200;
+            const jackpots = {
+                minor: { prize: 4000 * mult, name: 'MINOR' },
+                major: { prize: 10000 * mult, name: 'MAJOR' },
+                grand: { prize: 20000 * mult, name: 'GRAND' },
+                super: { prize: 30000 * mult, name: 'SUPER' }
+            };
+            
+            let jpWon = 0;
+            let jpNames = [];
+            
+            ['minor', 'major', 'grand', 'super'].forEach(k => {
+                const row = pyramidRowsData[k];
+                if (row && row.cells.length > 0) {
+                    const isFull = row.cells.every(c => c.classList.contains('has-ball'));
+                    if (isFull) {
+                        jpWon += jackpots[k].prize;
+                        jpNames.push(jackpots[k].name);
+                    }
+                }
+            });
+            
+            totalBonusAccum += jpWon;
+            
+            if (jpWon > 0) {
+                tickerEl.textContent = \`¡FIN BONUS! JACKPOTS [\$\{jpNames.join(', ')\}] = +\$\{jpWon\} CR. TOTAL: +\$\{totalBonusAccum\} CR\`;
+                playBigWinSound();
+            } else {
+                tickerEl.textContent = \`¡FIN DEL BONUS! PREMIO TOTAL GANADO: +\$\{totalBonusAccum\} CR\`;
+                playWinSound();
+            }
 
             setTimeout(() => {
                 isBonusMode = false;
@@ -1260,12 +1289,14 @@ function placeBallInCell(cell, value) {
     if (!cell) return;
     cell.classList.add('has-ball');
     cell.innerHTML = `
-        <div class="pyramid-fire-ball">
-            <span class="pyramid-ball-val">${value}</span>
+        <div class="sym-fireshot-rafael" style="transform: scale(0.85); display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%;">
+            <div class="fire-ball-sphere" style="width: 48px; height: 48px; position: relative;">
+                <span class="fire-ball-rafael-text${value >= 1000 ? ' sm' : ''}" style="font-size: 0.55rem; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">RAFAEL</span>
+            </div>
+            <div class="fire-ball-prize" style="font-size: 0.6rem; margin-top: 2px;">${value} CR</div>
         </div>
     `;
-}
-
+}\n\n
 // -------------------------------------------------------------
 // TABLA DE PAGOS
 // -------------------------------------------------------------

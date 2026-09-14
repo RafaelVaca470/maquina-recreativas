@@ -828,7 +828,7 @@ body {
     width: 100%;
 }
 
-.name-FRAN {
+.name-fran {
     font-size: 0.58rem !important;
     letter-spacing: 0px !important;
 }
@@ -855,7 +855,7 @@ body {
 .sym-badge-susana .badge-name-std { color: #a3ffcf; }
 
 /* FRAN - NARANJA VIVO */
-.sym-badge-FRAN {
+.sym-badge-fran {
     background: linear-gradient(135deg, #331200 0%, #662400 50%, #331200 100%);
     border: 2px solid #ff5500;
     border-radius: 8px;
@@ -868,7 +868,7 @@ body {
     justify-content: center;
     box-shadow: 0 0 8px rgba(255, 85, 0, 0.5);
 }
-.sym-badge-FRAN .badge-name-std { color: #ffcc99; }
+.sym-badge-fran .badge-name-std { color: #ffcc99; }
 
 /* AURORA - RUBÍ ROSA */
 .sym-badge-aurora {
