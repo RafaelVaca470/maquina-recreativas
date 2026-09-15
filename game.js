@@ -852,16 +852,19 @@ async function spin() {
 
     const spinPromises = strips.map((strip, index) => {
         return new Promise(resolve => {
-            const stopDelay = 1500 + (index * 700); // 4+ segundos
-            setTimeout(() => {
-                strip.style.transition = `transform ${stopDelay / 1000}s cubic-bezier(0.15, 0.85, 0.3, 1.08)`;
-                strip.style.transform = 'translateY(0)';
-                setTimeout(() => {
-                    playReelStopSound(index);
-                    resolve();
-                }, stopDelay + 20);
-            }, 10);
+            const stopDelay = 1500 + (index * 700);
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    strip.style.transition = "transform ${stopDelay / 1000}s cubic-bezier(0.15, 0.85, 0.3, 1.08)";
+                    strip.style.transform = 'translateY(0)';
+                    setTimeout(() => {
+                        playReelStopSound(index);
+                        resolve();
+                    }, stopDelay);
+                });
+            });
         });
+    });
     });
 
     await Promise.all(spinPromises);
