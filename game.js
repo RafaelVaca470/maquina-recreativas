@@ -137,7 +137,6 @@ function playSpinSound() {
         i++;
     }, 70);
 }
-}
 
 function playBonusSpinSound() {
     if (isAudioMuted || !audioCtx) return;
