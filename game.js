@@ -863,7 +863,7 @@ async function spin() {
             const stopDelay = 1500 + (index * 1125); // 4.5s span from first to last
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
-                    strip.style.transition = 'transform ' + (stopDelay / 1000) + 's cubic-bezier(0.15, 0.85, 0.3, 1.08)';
+                    strip.style.transition = 'transform ' + (stopDelay / 1000) + 's linear';
                     strip.style.transform = 'translateY(0)';
                     setTimeout(() => {
                         playReelStopSound(index);
