@@ -1,4 +1,4 @@
-// =======================================================
+﻿// =======================================================
 // FIRE SHOT BAR - UNIDESA RECREATIVO ENTRE AMIGOS (CRÉDITOS VIRTUALES)
 // 1 € = 100 Créditos Recreativos (CR)
 // Multijugador: Turno Único, Cola de Espera, Modo Espectador y Control de Caja
@@ -26,6 +26,20 @@ const SYMBOLS = [
     { id: 'ISABEL', label: 'ISABEL', prob: 26, multi: 0, type: 'std' }, 
     { id: 'CARMEN', label: 'CARMEN', prob: 26, multi: 0, type: 'std' }
 ];
+
+// Tabla de Pagos Base (x Apuesta de 5 Créditos). Para apuestas mayores, se multiplica.
+const PAYTABLE = {
+    'MARY': { 3: 0, 4: 0, 5: 2500 }, // 2500 * (20/5) = 10000 CRÉDITOS en apuesta de 20
+    'SUSANA': { 3: 15, 4: 50, 5: 200 },
+    'CHARI': { 3: 10, 4: 40, 5: 150 },
+    'FRAN': { 3: 5, 4: 20, 5: 80 },
+    'ROBER': { 3: 5, 4: 15, 5: 60 },
+    'EVA': { 3: 4, 4: 12, 5: 50 },
+    'AURORA': { 3: 3, 4: 10, 5: 40 },
+    'ANTONIO': { 3: 3, 4: 8, 5: 30 },
+    'ISABEL': { 3: 2, 4: 5, 5: 20 },
+    'CARMEN': { 3: 2, 4: 5, 5: 20 }
+};
 
 // Ocultamos la declaración original
 
@@ -577,13 +591,18 @@ function renderSpectatorSpin(spinData) {
 // SÍMBOLOS Y RODILLOS 5x4
 // -------------------------------------------------------------
 function getRandomSymbol() {
-    const totalWeight = SYMBOLS.reduce((acc, s) => acc + s.prob, 0);
+    let mayteProb = isFreeSpinsMode ? 1 : 4;
+    const dynamicSymbols = SYMBOLS.map(s => {
+        if (s.id === 'MAYTE') return { ...s, prob: mayteProb };
+        return s;
+    });
+    const totalWeight = dynamicSymbols.reduce((acc, s) => acc + s.prob, 0);
     let rand = Math.random() * totalWeight;
-    for (let s of SYMBOLS) {
+    for (let s of dynamicSymbols) {
         if (rand < s.prob) return s;
         rand -= s.prob;
     }
-    return SYMBOLS[SYMBOLS.length - 1];
+    return dynamicSymbols[dynamicSymbols.length - 1];
 }
 
 function createSymbolElement(symbolData) {
@@ -668,7 +687,7 @@ function buildReels(initial = false) {
         strip.style.transition = 'none';
 
         // Símbolos nuevos que quedarán al final (posiciones 0 a 3, arriba)
-        const stackMayteThisReel = isFreeSpinsMode && Math.random() < 0.02; // Ajustado a 2% para evitar bucles infinitos y cumplir 'ES MUY DIFICIL'
+        const stackMayteThisReel = false; // Desactivado para hacer más difícil reconseguir Mayte
         for (let i = 0; i < 4; i++) {
             let symData;
 
@@ -828,7 +847,7 @@ async function spin() {
 
     const spinPromises = strips.map((strip, index) => {
         return new Promise(resolve => {
-            const stopDelay = 800 + (index * 400); // 800ms, 1200ms, 1600ms, 2000ms, 2400ms
+            const stopDelay = 400 + (index * 250); // Ajustado para ser más rápido como el vídeo real
             setTimeout(() => {
                 strip.style.transition = `transform ${stopDelay / 1000}s cubic-bezier(0.15, 0.85, 0.3, 1.08)`;
                 strip.style.transform = 'translateY(0)';
@@ -933,17 +952,27 @@ async function checkResults() {
     // 3. Evaluar Líneas de Pago (20 Líneas)
     let totalWinPts = 0;
     const winningLines = [];
+    const multiplierBonus = isFreeSpinsMode ? 2 : 1; // x2 en giros gratis
 
     PAYLINES_5x4.forEach((line, lineIdx) => {
         const lineSymbols = line.map(pos => screen[pos.r][pos.c].dataset.symbolId);
         let targetSym = null;
-        for (let s of lineSymbols) {
-            if (s !== 'MARY' && s !== 'RAFAEL') {
-                targetSym = s;
+        
+        for (let i = 0; i < lineSymbols.length; i++) {
+            let s = lineSymbols[i];
+            if (s !== 'MARY') {
+                if (s === 'MAYTE' || s === 'RAFAEL') {
+                    // El comodín no puede sustituir a símbolos especiales
+                    targetSym = 'MARY';
+                } else {
+                    targetSym = s;
+                }
                 break;
             }
         }
-        if (!targetSym) return;
+        
+        // Si toda la línea es de comodines
+        if (!targetSym) targetSym = 'MARY';
 
         let matchCount = 0;
         for (let s of lineSymbols) {
@@ -955,26 +984,22 @@ async function checkResults() {
         }
 
         if (matchCount >= 3) {
-            if (targetSym === 'MAYTE' || targetSym === 'RAFAEL') return;
+            if (PAYTABLE[targetSym] && PAYTABLE[targetSym][matchCount] > 0) {
+                let basePoints = PAYTABLE[targetSym][matchCount];
+                let linePoints = Math.round(basePoints * (currentBet / 5));
+                linePoints = linePoints * multiplierBonus; // Aplica el multiplicador x2 de Mayte
 
-            let linePoints = 0;
-            if (targetSym === 'SUSANA') {
-                linePoints = matchCount === 3 ? 25 : matchCount === 4 ? 35 : 50;
-            } else {
-                linePoints = matchCount === 3 ? 5 : matchCount === 4 ? 10 : 15;
+                totalWinPts += linePoints;
+
+                winningLines.push({
+                    line: line.slice(0, matchCount),
+                    lineIdx,
+                    targetSym,
+                    linePoints,
+                    matchCount,
+                    color: getSymbolColor(targetSym)
+                });
             }
-
-            linePoints = Math.round(linePoints * (currentBet / 5));
-            totalWinPts += linePoints;
-
-            winningLines.push({
-                line: line.slice(0, matchCount),
-                lineIdx,
-                targetSym,
-                linePoints,
-                matchCount,
-                color: getSymbolColor(targetSym)
-            });
         }
     });
 
