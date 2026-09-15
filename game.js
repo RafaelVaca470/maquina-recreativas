@@ -120,15 +120,23 @@ function playTone(freq, type, duration, vol = 0.15) {
     } catch (e) {}
 }
 
+let spinAudioInterval = null;
+
 function playSpinSound() {
     if (isAudioMuted || !audioCtx) return;
+    if (spinAudioInterval) clearInterval(spinAudioInterval);
     playTone(420, 'triangle', 0.05, 0.15);
-    for (let i = 0; i < 8; i++) {
-        setTimeout(() => {
-            if (isAudioMuted || !audioCtx) return;
-            playTone(320 + (i % 2) * 40, 'sine', 0.04, 0.09);
-        }, (i + 1) * 40);
-    }
+    
+    let i = 0;
+    spinAudioInterval = setInterval(() => {
+        if (isAudioMuted || !audioCtx || (!isSpinning && i > 5)) {
+            clearInterval(spinAudioInterval);
+            return;
+        }
+        playTone(320 + (i % 2) * 40, 'sine', 0.03, 0.06);
+        i++;
+    }, 70);
+}
 }
 
 function playBonusSpinSound() {
