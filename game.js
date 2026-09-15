@@ -686,14 +686,12 @@ function buildReels(initial = false) {
         strip.innerHTML = '';
         strip.style.transition = 'none';
 
-        // Generar 20 smbolos con lgica de apilamiento (stacks)
+        // Generar 20 símbolos. Apilamiento SÓLO en giros gratis.
         const newSymbols = [];
         let i = 0;
         while (i < 20) {
-            // Decide if we should stack
             const symData = getRandomSymbol();
-            // 60% chance to stack 2-5 of the same symbol to mimic real machines
-            const stackSize = Math.random() < 0.6 ? Math.floor(Math.random() * 4) + 2 : 1;
+            const stackSize = (isFreeSpinsMode && Math.random() < 0.6) ? Math.floor(Math.random() * 4) + 2 : 1;
             for (let j = 0; j < stackSize && i < 20; j++) {
                 newSymbols.push(symData);
                 i++;
@@ -721,25 +719,26 @@ function buildReels(initial = false) {
             }
         }
 
-        // Smbolos nuevos que quedarn al final (posiciones 0 a 3, arriba)
+        // Símbolos nuevos que quedarán al final (posiciones 0 a 3, arriba)
         for (let i = 0; i < 4; i++) {
             const el = createSymbolElement(newSymbols[i]);
             strip.appendChild(el);
         }
 
-        // Smbolos intermedios de rodadura rpida (posiciones 4 a 19)
+        // Símbolos intermedios de rodadura rápida (posiciones 4 a 19)
         for (let i = 4; i < 20; i++) {
             const el = createSymbolElement(newSymbols[i]);
             el.style.filter = 'blur(1.5px)';
             strip.appendChild(el);
         }
 
-        // Smbolos anteriores (posiciones 20 a 23, abajo)
+        // Símbolos anteriores (posiciones 20 a 23, abajo)
         prevVisible.forEach(el => {
             strip.appendChild(el.cloneNode(true));
         });
 
-        strip.style.transform = "translateY(-${85 * 20}px)";
+        // Corregido el problema de las comillas (backticks requeridos para iterpolación)
+        strip.style.transform = 'translateY(-' + (85 * 20) + 'px)';
         void strip.offsetHeight;
     });
 
