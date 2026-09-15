@@ -14,8 +14,8 @@ function isAnyAdminPassword(pass) {
 // Configuración de Símbolos y Jerarquía Personalizada
 const SYMBOLS = [
     { id: 'MARY', label: 'MARY', prob: 6, multi: 0, type: 'wild' }, // Comodín
-    { id: 'RAFAEL', label: 'RAFAEL', prob: 9, multi: 0, type: 'fireshot' }, // Bola de fuego
-    { id: 'MAYTE', label: 'MAYTE', prob: 4, multi: 0, type: 'flower' }, // Scatter
+    { id: 'RAFAEL', label: 'RAFAEL', prob: 17, multi: 0, type: 'fireshot' }, // Bola de fuego
+    { id: 'MAYTE', label: 'MAYTE', prob: 4.5, multi: 0, type: 'flower' }, // Scatter
     { id: 'CHARI', label: 'CHARI', prob: 18, multi: 0, type: 'std' }, 
     { id: 'SUSANA', label: 'SUSANA', prob: 12, multi: 0, type: 'std' }, 
     { id: 'FRAN', label: 'FRAN', prob: 18, multi: 0, type: 'std' }, 
@@ -686,12 +686,22 @@ function buildReels(initial = false) {
         strip.innerHTML = '';
         strip.style.transition = 'none';
 
-        // Símbolos nuevos que quedarán al final (posiciones 0 a 3, arriba)
-        const stackMayteThisReel = false; // Desactivado para hacer más difícil reconseguir Mayte
-        for (let i = 0; i < 4; i++) {
-            let symData;
+        // Generar 20 smbolos con lgica de apilamiento (stacks)
+        const newSymbols = [];
+        let i = 0;
+        while (i < 20) {
+            // Decide if we should stack
+            const symData = getRandomSymbol();
+            // 60% chance to stack 2-5 of the same symbol to mimic real machines
+            const stackSize = Math.random() < 0.6 ? Math.floor(Math.random() * 4) + 2 : 1;
+            for (let j = 0; j < stackSize && i < 20; j++) {
+                newSymbols.push(symData);
+                i++;
+            }
+        }
 
-            // Si está activado forzar bonus de Rafael desde Administrador
+        // Sobrescribir si el admin fuerza bonus
+        for (let i = 0; i < 4; i++) {
             const isRafaelBonusSlot = forceRafaelBonusNextSpin && (
                 (reelIndex === 0 && i === 1) ||
                 (reelIndex === 1 && (i === 0 || i === 2)) ||
@@ -699,41 +709,37 @@ function buildReels(initial = false) {
                 (reelIndex === 3 && i === 2) ||
                 (reelIndex === 4 && (i === 0 || i === 3))
             );
-
-            // Si está activado forzar bonus de Mayte desde Administrador
             const isMayteBonusSlot = forceMayteBonusNextSpin && (
                 (reelIndex === 0 && i === 1) ||
                 (reelIndex === 2 && i === 1) ||
                 (reelIndex === 4 && i === 1)
             );
-
             if (isRafaelBonusSlot) {
-                symData = SYMBOLS.find(s => s.id === 'RAFAEL');
+                newSymbols[i] = SYMBOLS.find(s => s.id === 'RAFAEL');
             } else if (isMayteBonusSlot) {
-                symData = SYMBOLS.find(s => s.id === 'MAYTE');
-            } else if (stackMayteThisReel) {
-                symData = Math.random() < 0.8 ? SYMBOLS.find(s => s.id === 'MAYTE') : getRandomSymbol();
-            } else {
-                symData = getRandomSymbol();
+                newSymbols[i] = SYMBOLS.find(s => s.id === 'MAYTE');
             }
-            const el = createSymbolElement(symData);
+        }
+
+        // Smbolos nuevos que quedarn al final (posiciones 0 a 3, arriba)
+        for (let i = 0; i < 4; i++) {
+            const el = createSymbolElement(newSymbols[i]);
             strip.appendChild(el);
         }
 
-        // Símbolos intermedios de rodadura rápida (posiciones 4 a 19)
-        for (let i = 0; i < 16; i++) {
-            const symData = getRandomSymbol();
-            const el = createSymbolElement(symData);
+        // Smbolos intermedios de rodadura rpida (posiciones 4 a 19)
+        for (let i = 4; i < 20; i++) {
+            const el = createSymbolElement(newSymbols[i]);
             el.style.filter = 'blur(1.5px)';
             strip.appendChild(el);
         }
 
-        // Símbolos anteriores (posiciones 20 a 23, abajo)
+        // Smbolos anteriores (posiciones 20 a 23, abajo)
         prevVisible.forEach(el => {
             strip.appendChild(el.cloneNode(true));
         });
 
-        strip.style.transform = `translateY(-${85 * 20}px)`;
+        strip.style.transform = "translateY(-${85 * 20}px)";
         void strip.offsetHeight;
     });
 
@@ -785,7 +791,7 @@ function handleMainSpinOrAcumular() {
     }
 
     // Acumular premio ganado a saldo
-    if (currentWonAmount > 0) {
+    if (currentWonAmount > 0 && !isFreeSpinsMode && !isBonusMode) {
         acumularGanadoACreditos();
         return;
     }
@@ -847,7 +853,7 @@ async function spin() {
 
     const spinPromises = strips.map((strip, index) => {
         return new Promise(resolve => {
-            const stopDelay = 400 + (index * 250); // Ajustado para ser más rápido como el vídeo real
+            const stopDelay = 1500 + (index * 700); // 4+ segundos
             setTimeout(() => {
                 strip.style.transition = `transform ${stopDelay / 1000}s cubic-bezier(0.15, 0.85, 0.3, 1.08)`;
                 strip.style.transform = 'translateY(0)';
@@ -1432,7 +1438,7 @@ function setupEventListeners() {
             tickerEl.textContent = "★ AUTO AVANCE ACTIVADO ★";
             autoInterval = setInterval(() => {
                 if (!isSpinning && isMyTurn()) {
-                    if (currentWonAmount > 0) {
+                    if (currentWonAmount > 0 && !isFreeSpinsMode && !isBonusMode) {
                         acumularGanadoACreditos();
                     } else {
                         transferBalanceToPointsIfNeeded();

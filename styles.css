@@ -1,4 +1,4 @@
-/* =======================================================
+﻿/* =======================================================
    FIRE SHOT BAR - UNIDESA CABINET THEME
    Recreación fidedigna de máquina tragaperras de bar española
    ======================================================= */
@@ -394,7 +394,7 @@ body {
 .fire-icons-row {
     gap: 1px;
     font-size: 0.65rem;
-    filter: drop-shadow(0 0 4px #ff5500);
+    filter: drop-shadow(0 0 4px #3385ff);
     animation: flamePulse 1.2s infinite alternate;
 }
 
@@ -423,7 +423,7 @@ body {
 }
 
 .superballs-pill {
-    background: #ff5500;
+    background: #3385ff;
     color: #fff;
     font-size: 0.50rem;
     font-weight: 900;
@@ -680,7 +680,7 @@ body {
     height: 62px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, #fff5cc 0%, #ffaa00 35%, #ff2200 75%, #660a00 100%);
-    box-shadow: 0 0 15px #ff5500, 0 0 30px #ff2200, inset 0 0 8px #fff;
+    box-shadow: 0 0 15px #3385ff, 0 0 30px #ff2200, inset 0 0 8px #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -726,7 +726,7 @@ body {
 }
 
 @keyframes ballPulsate {
-    from { transform: scale(0.95); box-shadow: 0 0 10px #ff5500; }
+    from { transform: scale(0.95); box-shadow: 0 0 10px #3385ff; }
     to { transform: scale(1.05); box-shadow: 0 0 22px #ff2200, 0 0 30px #ffbb00; }
 }
 
@@ -856,8 +856,8 @@ body {
 
 /* FRAN - NARANJA VIVO */
 .sym-badge-fran {
-    background: linear-gradient(135deg, #331200 0%, #662400 50%, #331200 100%);
-    border: 2px solid #ff5500;
+    background: linear-gradient(135deg, #001f4d 0%, #003399 50%, #001f4d 100%);
+    border: 2px solid #3385ff;
     border-radius: 8px;
     width: 94%;
     padding: 0 1px;
@@ -866,9 +866,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 8px rgba(255, 85, 0, 0.5);
+    box-shadow: 0 0 8px rgba(51, 133, 255, 0.5);
 }
-.sym-badge-fran .badge-name-std { color: #ffcc99; }
+.sym-badge-fran .badge-name-std { color: #b3d9ff; }
 
 /* AURORA - RUBÍ ROSA */
 .sym-badge-aurora {
@@ -968,8 +968,8 @@ body {
 
 /* CHARI - ORQUÍDEA MAGENTA */
 .sym-badge-chari {
-    background: linear-gradient(135deg, #330026 0%, #66004d 50%, #330026 100%);
-    border: 2px solid #ff33bb;
+    background: linear-gradient(135deg, #1f004d 0%, #3d0099 50%, #1f004d 100%);
+    border: 2px solid #8a2be2;
     border-radius: 8px;
     width: 94%;
     padding: 0 1px;
@@ -978,9 +978,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 0 8px rgba(255, 51, 187, 0.4);
+    box-shadow: 0 0 8px rgba(138, 43, 226, 0.4);
 }
-.sym-badge-chari .badge-name-std { color: #ffcce6; }
+.sym-badge-chari .badge-name-std { color: #d9b3ff; }
 
 /* COMODÍN - COMODÍN DE FUEGO */
 .sym-wild-badge {
@@ -1811,7 +1811,7 @@ body {
     height: 62px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 35%, #fff 0%, #ffcc00 30%, #ff4400 70%, #991100 100%);
-    box-shadow: 0 0 25px #ff5500, 0 0 45px #ff2200, inset 0 0 12px #fff;
+    box-shadow: 0 0 25px #3385ff, 0 0 45px #ff2200, inset 0 0 12px #fff;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1828,9 +1828,9 @@ body {
 }
 
 @keyframes resetBurst {
-    0% { transform: scale(1); box-shadow: 0 0 25px #ff5500; }
+    0% { transform: scale(1); box-shadow: 0 0 25px #3385ff; }
     50% { transform: scale(1.4); box-shadow: 0 0 55px #ffcc00, 0 0 80px #ff2200; filter: brightness(1.7); }
-    100% { transform: scale(1); box-shadow: 0 0 25px #ff5500; }
+    100% { transform: scale(1); box-shadow: 0 0 25px #3385ff; }
 }
 
 .spins-digit {
@@ -1995,7 +1995,7 @@ body {
 
 @keyframes jackpotRowFlash {
     from { filter: brightness(1); box-shadow: 0 0 5px #ffaa00; }
-    to { filter: brightness(1.6); box-shadow: 0 0 20px #ffea00, 0 0 35px #ff5500; }
+    to { filter: brightness(1.6); box-shadow: 0 0 20px #ffea00, 0 0 35px #3385ff; }
 }
 
 .bonus-footer-row {
