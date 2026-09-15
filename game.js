@@ -151,8 +151,8 @@ function playBonusSpinSound() {
 
 function playReelStopSound(index) {
     if (isAudioMuted || !audioCtx) return;
-    playTone(80 - (index * 5), 'sine', 0.2, 0.4); 
-    playTone(200, 'square', 0.05, 0.05); 
+    playTone(150, 'square', 0.04, 0.2); 
+    playTone(300, 'triangle', 0.06, 0.1); 
 }
 
 function playCoinSound() {
@@ -693,13 +693,14 @@ function buildReels(initial = false) {
         strip.innerHTML = '';
         strip.style.transition = 'none';
 
-        // Generar 20 símbolos. Apilamiento SÓLO en giros gratis.
+        const numSymbols = initial ? 4 : 20 + (reelIndex * 15);
+        // Generar numSymbols símbolos. Apilamiento SÓLO en giros gratis.
         const newSymbols = [];
         let i = 0;
-        while (i < 20) {
+        while (i < numSymbols) {
             const symData = getRandomSymbol();
             const stackSize = (isFreeSpinsMode && Math.random() < 0.6) ? Math.floor(Math.random() * 4) + 2 : 1;
-            for (let j = 0; j < stackSize && i < 20; j++) {
+            for (let j = 0; j < stackSize && i < numSymbols; j++) {
                 newSymbols.push(symData);
                 i++;
             }
@@ -732,8 +733,8 @@ function buildReels(initial = false) {
             strip.appendChild(el);
         }
 
-        // Símbolos intermedios de rodadura rápida (posiciones 4 a 19)
-        for (let i = 4; i < 20; i++) {
+        // Símbolos intermedios de rodadura rápida
+        for (let i = 4; i < numSymbols; i++) {
             const el = createSymbolElement(newSymbols[i]);
             el.style.filter = 'blur(1.5px)';
             strip.appendChild(el);
@@ -745,7 +746,7 @@ function buildReels(initial = false) {
         });
 
         // Corregido el problema de las comillas (backticks requeridos para iterpolación)
-        strip.style.transform = 'translateY(-' + (85 * 20) + 'px)';
+        strip.style.transform = 'translateY(-' + (85 * numSymbols) + 'px)';
         void strip.offsetHeight;
     });
 
@@ -859,7 +860,7 @@ async function spin() {
 
     const spinPromises = strips.map((strip, index) => {
         return new Promise(resolve => {
-            const stopDelay = 1500 + (index * 700); // 4+ segundos
+            const stopDelay = 1500 + (index * 1125); // 4.5s span from first to last
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     strip.style.transition = 'transform ' + (stopDelay / 1000) + 's cubic-bezier(0.15, 0.85, 0.3, 1.08)';
