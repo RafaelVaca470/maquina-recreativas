@@ -2306,3 +2306,139 @@ window.addEventListener('DOMContentLoaded', init);
 
 
 
+
+// -------------------------------------------------------------
+// BONO DIARIO LOGIC
+// -------------------------------------------------------------
+const btnDailyBonus = document.getElementById('btn-daily-bonus');
+const dailyBonusModal = document.getElementById('daily-bonus-modal');
+const dailyReelStrip = document.getElementById('daily-reel-strip');
+const dailyWinAmount = document.getElementById('daily-win-amount');
+const btnSpinDaily = document.getElementById('btn-spin-daily');
+const btnCloseDaily = document.getElementById('btn-close-daily');
+
+let dailyBonusClaimedToday = false;
+
+function getTodayString() {
+    const d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+}
+
+function checkDailyBonusStatus() {
+    if (!currentUser || !currentUser.username || currentUser.username.toUpperCase() === 'ADMIN') {
+        if(btnDailyBonus) btnDailyBonus.classList.add('hidden');
+        return;
+    }
+    
+    const today = getTodayString();
+    const storageKey = 'dailyClaimed_' + currentUser.username.toLowerCase() + '_' + today;
+    const hasClaimed = localStorage.getItem(storageKey);
+    
+    if (hasClaimed) {
+        dailyBonusClaimedToday = true;
+        if(btnDailyBonus) btnDailyBonus.classList.add('hidden');
+        return;
+    }
+    
+    // Validar si jugó 200 CR
+    // totalBetsSession tracks the session, but we want it across the day ideally.
+    // If we only track in memory for this session:
+    if (totalBetsSession >= 200) {
+        if(btnDailyBonus) {
+            btnDailyBonus.classList.remove('hidden');
+            btnDailyBonus.classList.add('pulsing-btn');
+        }
+    } else {
+        if(btnDailyBonus) btnDailyBonus.classList.add('hidden');
+    }
+}
+
+// Hook checkDailyBonusStatus into updateDisplays
+const oldUpdateDisplaysDaily = updateDisplays;
+updateDisplays = function() {
+    oldUpdateDisplaysDaily();
+    checkDailyBonusStatus();
+};
+
+if (btnDailyBonus) {
+    btnDailyBonus.addEventListener('click', () => {
+        dailyBonusModal.classList.remove('hidden');
+        dailyWinAmount.textContent = '-- CR';
+        btnSpinDaily.classList.remove('hidden');
+        btnCloseDaily.classList.add('hidden');
+        dailyReelStrip.style.transition = 'none';
+        dailyReelStrip.style.transform = 'translateY(0)';
+        dailyReelStrip.innerHTML = '<div>??</div>';
+    });
+}
+
+if (btnCloseDaily) {
+    btnCloseDaily.addEventListener('click', () => {
+        dailyBonusModal.classList.add('hidden');
+    });
+}
+
+if (btnSpinDaily) {
+    btnSpinDaily.addEventListener('click', async () => {
+        btnSpinDaily.classList.add('hidden');
+        
+        // Determinar el premio (10 a 100 peso 2, 110 a 200 peso 1)
+        const prizes = [];
+        for(let i=10; i<=100; i+=10) { prizes.push({v: i, w: 2}); }
+        for(let i=110; i<=200; i+=10) { prizes.push({v: i, w: 1}); }
+        
+        let totalWeight = prizes.reduce((sum, p) => sum + p.w, 0);
+        let r = Math.random() * totalWeight;
+        let wonPrize = 200;
+        for(let p of prizes) {
+            if (r < p.w) { wonPrize = p.v; break; }
+            r -= p.w;
+        }
+        
+        // Generar la tira de números (40 números de relleno + premio al final)
+        let stripHtml = '';
+        const numSymbols = 40;
+        for(let i=0; i<numSymbols-1; i++) {
+            let randVal = Math.floor(Math.random()*20)*10 + 10;
+            stripHtml += '<div style="height: 100px;">' + randVal + '</div>';
+        }
+        stripHtml += '<div style="height: 100px; color: #ffea75;">' + wonPrize + '</div>';
+        dailyReelStrip.innerHTML = stripHtml;
+        
+        // Iniciar sonido y giro
+        if (!isAudioMuted && audioCtx) {
+            initAudio();
+            let audioInterval = setInterval(() => {
+                playTone(500, 'square', 0.02, 0.05);
+            }, 50);
+            setTimeout(() => clearInterval(audioInterval), 2900);
+        }
+        
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                dailyReelStrip.style.transition = 'transform 3s cubic-bezier(0.1, 0.7, 0.1, 1)';
+                dailyReelStrip.style.transform = 'translateY(-' + (100 * (numSymbols - 1)) + 'px)';
+            });
+        });
+        
+        // Esperar a que pare
+        await new Promise(res => setTimeout(res, 3000));
+        
+        if (!isAudioMuted && audioCtx) {
+            playTone(800, 'triangle', 0.1, 0.15);
+            setTimeout(() => playTone(1200, 'triangle', 0.3, 0.2), 150);
+        }
+        
+        dailyWinAmount.textContent = '¡+' + wonPrize + ' CR!';
+        balance += wonPrize;
+        updateDisplays();
+        
+        // Marcar como reclamado
+        const today = getTodayString();
+        const storageKey = 'dailyClaimed_' + currentUser.username.toLowerCase() + '_' + today;
+        localStorage.setItem(storageKey, 'true');
+        checkDailyBonusStatus();
+        
+        btnCloseDaily.classList.remove('hidden');
+    });
+}

@@ -34,6 +34,7 @@
                         <span id="mp-timer-display" class="mp-timer-val">--:--</span>
                     </div>
                     <div class="mp-header-right">
+                        <button id="btn-daily-bonus" class="mp-btn-action hidden" style="background: linear-gradient(180deg, #ff00aa, #aa00ff); margin-right: 10px; font-weight: bold; border-color: #ff55ff; color: #fff; box-shadow: 0 0 5px #ff00ff;">🎁 REGALO</button>
                         <span id="mp-queue-pill" class="mp-pill">COLA: 0</span>
                         <button id="mp-queue-btn" class="mp-btn-action">PEDIR TURNO</button>
                         <span id="mp-spectator-pill" class="mp-pill mp-spec-pill hidden">??? MIRANDO</span>
@@ -583,7 +584,25 @@
         </div>
     </div>
 
-    <script src="game.js?v=34"></script>
+            <!-- MODAL 8: BONO DIARIO -->
+        <div id="daily-bonus-modal" class="modal hidden">
+            <div class="modal-content glass-box" style="text-align: center; padding: 30px; width: 350px;">
+                <div class="modal-header-banner" style="background: linear-gradient(90deg, transparent, #ff00ff, transparent);">
+                    <span class="modal-header-icon">🎁</span>
+                    <h2 style="font-size: 1.2rem; color: #fff; text-shadow: 0 0 5px #fff;">BONO DIARIO</h2>
+                </div>
+                <p style="color: #ccc; margin: 15px 0; font-size: 0.9rem;">Has jugado 200 CR hoy. ¡Descubre tu premio diario (hasta 200 CR)!</p>
+                <div style="background: #111; border: 3px solid #ff00ff; border-radius: 10px; height: 100px; width: 140px; margin: 20px auto; overflow: hidden; position: relative; box-shadow: 0 0 15px #ff00ff;">
+                    <div id="daily-reel-strip" style="position: absolute; top: 0; left: 0; width: 100%; font-size: 3.5rem; font-weight: bold; color: #fff; text-shadow: 0 0 10px #ff00ff; line-height: 100px; text-align: center; transform: translateY(0);">
+                        --
+                    </div>
+                </div>
+                <div id="daily-win-amount" style="font-size: 1.5rem; color: #00ff88; margin-bottom: 20px; text-shadow: 0 0 10px #00ff88; height: 2rem;"></div>
+                <button id="btn-spin-daily" class="modal-btn confirm btn-full-glow" style="background: linear-gradient(180deg, #ff00aa, #aa00ff);">¡TIRAR AHORA!</button>
+                <button id="btn-close-daily" class="modal-btn cancel hidden">RECOGER</button>
+            </div>
+        </div>
+    <script src="game.js?v=28"></script>
 </body>
 </html>
 
