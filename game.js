@@ -1203,7 +1203,7 @@ async function startFireShotPyramidBonus(initialBalls) {
         pyramidRowsData[rowKey].cells = [];
         for (let i = 0; i < targetCount; i++) {
             const cell = document.createElement('div');
-            cell.className = 'pyramid-cell-slot';
+            cell.className = 'p-cell pyramid-cell-slot';
             container.appendChild(cell);
             pyramidRowsData[rowKey].cells.push(cell);
         }
