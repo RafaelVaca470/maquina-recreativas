@@ -64,6 +64,7 @@ let isFreeSpinsMode = false;
 let freeSpinsTotal = 10;
 let freeSpinsCurrent = 0;
 let isBonusMode = false;
+let freeSpinsTotalWon = 0;
 
 // Banderas para forzar bonus (exclusivas del Administrador)
 let forceRafaelBonusNextSpin = false;
@@ -964,19 +965,29 @@ async function checkResults() {
     // 2. Minijuego Flores de Mayte (3 o más)
     if (mayteCount >= 3) {
         playFireShotJingle();
+        // Pago directo Scatter
+        let scatterWin = 0;
+        if (mayteCount === 3) scatterWin = currentBet * 3;
+        else if (mayteCount === 4) scatterWin = currentBet * 10;
+        else if (mayteCount >= 5) scatterWin = currentBet * 50;
+        
+        currentWonAmount += scatterWin;
+        if(scatterWin > 0) tickerEl.textContent = `¡PREMIO MAYTE: +${scatterWin} CR!`;
+
         if (isFreeSpinsMode) {
             freeSpinsTotal += 10;
             fsLeftEl.textContent = `${freeSpinsCurrent + 1} DE ${freeSpinsTotal}`;
-            tickerEl.textContent = "¡+10 JUEGOS GRATIS DE MAYTE ADICIONALES!";
+            setTimeout(() => { tickerEl.textContent = "¡+10 JUEGOS GRATIS DE MAYTE ADICIONALES!"; }, 1500);
         } else {
-            startFreeSpins();
+            setTimeout(() => { startFreeSpins(); }, 1500);
         }
+    }
     }
 
     // 3. Evaluar Líneas de Pago (20 Líneas)
     let totalWinPts = 0;
     const winningLines = [];
-    const multiplierBonus = isFreeSpinsMode ? 2 : 1; // x2 en giros gratis
+    const multiplierBonus = isFreeSpinsMode ? 3 : 1; // x2 en giros gratis
 
     PAYLINES_5x4.forEach((line, lineIdx) => {
         const lineSymbols = line.map(pos => screen[pos.r][pos.c].dataset.symbolId);
@@ -1027,6 +1038,7 @@ async function checkResults() {
         }
     });
 
+    if (isFreeSpinsMode) freeSpinsTotalWon += totalWinPts;
     if (totalWinPts > 0) {
         playWinSound();
         currentWonAmount += totalWinPts;
@@ -1141,6 +1153,7 @@ function getSymbolColor(symId) {
 // JUEGO DE LAS FLORES (MAYTE) - 10 JUEGOS GRATIS
 // -------------------------------------------------------------
 function startFreeSpins() {
+    freeSpinsTotalWon = 0;
     isFreeSpinsMode = true;
     freeSpinsTotal = 10;
     freeSpinsCurrent = 0;
@@ -1156,10 +1169,20 @@ function startFreeSpins() {
 
 function endFreeSpins() {
     isFreeSpinsMode = false;
-    if (freeSpinsOverlay) freeSpinsOverlay.classList.add('hidden');
-    if (promoBadgesBar) promoBadgesBar.classList.remove('hidden');
-    if (reelFrameContainer) reelFrameContainer.classList.remove('mayte-spins-active');
-    tickerEl.textContent = "★ ¡FIN DE JUEGOS DE MAYTE! PULSA 'ACUMULAR' ★";
+    freeSpinsCurrent = 0;
+    freeSpinsTotal = 10;
+    fsLeftEl.parentElement.classList.add('hidden');
+    
+    // Consolation prize
+    if (freeSpinsTotalWon === 0) {
+        const consolation = currentBet * 10;
+        currentWonAmount += consolation;
+        tickerEl.textContent = `¡PREMIO DE CONSOLACIÓN DE MAYTE: +${consolation} CR!`;
+        playWinSound();
+        updateDisplays();
+    } else {
+        tickerEl.textContent = "★ ¡FIN DE JUEGOS DE MAYTE! PULSA 'ACUMULAR' ★";
+    }
 
     const screenWrapper = document.querySelector('.screen-wrapper');
     screenWrapper.classList.add('screen-flash-green');
@@ -1210,17 +1233,13 @@ async function startFireShotPyramidBonus(initialBalls) {
     });
 
     // Colocar bolas iniciales
-    let placed = 0;
+    // Colocar bolas iniciales al azar
     initialBalls.forEach(b => {
         const val = parseInt(b.dataset.ballValue) || 200;
-        if (placed < 2) {
-            placeBallInCell(pyramidRowsData.minor.cells[placed], val);
-        } else if (placed < 5) {
-            placeBallInCell(pyramidRowsData.major.cells[placed - 2], val);
-        } else if (placed < 9) {
-            placeBallInCell(pyramidRowsData.grand.cells[placed - 5], val);
+        const emptyCell = getRandomEmptyPyramidCell();
+        if (emptyCell) {
+            placeBallInCell(emptyCell, val);
         }
-        placed++;
     });
 
     btnPhysSpin.disabled = false;
@@ -1255,7 +1274,7 @@ async function startFireShotPyramidBonus(initialBalls) {
             totalBonusAccum += ballVal;
             bonusWinAmountEl.textContent = `${totalBonusAccum} CR`;
 
-            const emptyCell = findFirstEmptyPyramidCell();
+            const emptyCell = getRandomEmptyPyramidCell();
             if (emptyCell) {
                 placeBallInCell(emptyCell, ballVal);
             }
@@ -1315,24 +1334,29 @@ async function startFireShotPyramidBonus(initialBalls) {
     };
 }
 
-function findFirstEmptyPyramidCell() {
+function getRandomEmptyPyramidCell() {
     const order = ['minor', 'major', 'grand', 'super', 'mega0', 'mega1', 'mega2'];
+    let emptyCells = [];
     for (let k of order) {
         const row = pyramidRowsData[k];
         if (!row) continue;
         for (let cell of row.cells) {
-            if (!cell.classList.contains('has-ball')) return cell;
+            if (!cell.classList.contains('has-ball')) emptyCells.push(cell);
         }
     }
-    return null;
+    if (emptyCells.length === 0) return null;
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 
 function placeBallInCell(cell, value) {
     if (!cell) return;
     cell.classList.add('has-ball');
+    cell.classList.add('locked-ball');
     cell.innerHTML = `
-        <div class="pyramid-fire-ball">
-            <span class="pyramid-ball-val">${value}</span>
+        <div class="sym-fireshot-rafael">
+            <div class="fire-ball-sphere">
+                <span class="fire-ball-rafael-text${value >= 1000 ? ' sm' : ''}">${value}</span>
+            </div>
         </div>
     `;
 }
