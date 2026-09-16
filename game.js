@@ -981,8 +981,7 @@ async function checkResults() {
         } else {
             setTimeout(() => { startFreeSpins(); }, 1500);
         }
-    }
-    }
+    } 
 
     // 3. Evaluar Líneas de Pago (20 Líneas)
     let totalWinPts = 0;
