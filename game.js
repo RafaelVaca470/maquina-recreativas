@@ -13,32 +13,32 @@ function isAnyAdminPassword(pass) {
 
 // Configuración de Símbolos y Jerarquía Personalizada
 const SYMBOLS = [
-    { id: 'MARY', label: 'MARY', prob: 6, multi: 0, type: 'wild' }, // Comodín
-    { id: 'RAFAEL', label: 'RAFAEL', prob: 17, multi: 0, type: 'fireshot' }, // Bola de fuego
-    { id: 'MAYTE', label: 'MAYTE', prob: 4.5, multi: 0, type: 'flower' }, // Scatter
-    { id: 'CHARI', label: 'CHARI', prob: 18, multi: 0, type: 'std' }, 
-    { id: 'SUSANA', label: 'SUSANA', prob: 12, multi: 0, type: 'std' }, 
-    { id: 'FRAN', label: 'FRAN', prob: 18, multi: 0, type: 'std' }, 
-    { id: 'ROBER', label: 'ROBER', prob: 20, multi: 0, type: 'std' }, 
-    { id: 'EVA', label: 'EVA', prob: 20, multi: 0, type: 'std' }, 
-    { id: 'AURORA', label: 'AURORA', prob: 24, multi: 0, type: 'std' }, 
-    { id: 'ANTONIO', label: 'ANTONIO', prob: 24, multi: 0, type: 'std' }, 
-    { id: 'ISABEL', label: 'ISABEL', prob: 26, multi: 0, type: 'std' }, 
-    { id: 'CARMEN', label: 'CARMEN', prob: 26, multi: 0, type: 'std' }
+    { id: 'MARY', label: 'MARY', prob: 7, multi: 0, type: 'wild' }, // Comodín
+    { id: 'RAFAEL', label: 'RAFAEL', prob: 18, multi: 0, type: 'fireshot' }, // Bola de fuego
+    { id: 'MAYTE', label: 'MAYTE', prob: 5, multi: 0, type: 'flower' }, // Scatter
+    { id: 'CHARI', label: 'CHARI', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'SUSANA', label: 'SUSANA', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'FRAN', label: 'FRAN', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'ROBER', label: 'ROBER', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'EVA', label: 'EVA', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'AURORA', label: 'AURORA', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'ANTONIO', label: 'ANTONIO', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'ISABEL', label: 'ISABEL', prob: 21, multi: 0, type: 'std' }, 
+    { id: 'CARMEN', label: 'CARMEN', prob: 21, multi: 0, type: 'std' }
 ];
 
-// Tabla de Pagos Base (x Apuesta de 5 Créditos). Para apuestas mayores, se multiplica.
+// Tabla de Pagos Base (x Apuesta de 20 Créditos). Para otras apuestas, se ajusta proporcionalmente.
 const PAYTABLE = {
-    'MARY': { 3: 0, 4: 0, 5: 2500 }, // 2500 * (20/5) = 10000 CRÉDITOS en apuesta de 20
-    'SUSANA': { 3: 15, 4: 50, 5: 200 },
-    'CHARI': { 3: 10, 4: 40, 5: 150 },
-    'FRAN': { 3: 5, 4: 20, 5: 80 },
-    'ROBER': { 3: 5, 4: 15, 5: 60 },
-    'EVA': { 3: 4, 4: 12, 5: 50 },
-    'AURORA': { 3: 3, 4: 10, 5: 40 },
-    'ANTONIO': { 3: 3, 4: 8, 5: 30 },
-    'ISABEL': { 3: 2, 4: 5, 5: 20 },
-    'CARMEN': { 3: 2, 4: 5, 5: 20 }
+    'MARY': { 3: 0, 4: 0, 5: 10000 }, // 10000 CRÉDITOS en apuesta de 20
+    'SUSANA': { 3: 60, 4: 200, 5: 800 }, // Susana se mantiene especial
+    'CHARI': { 3: 20, 4: 60, 5: 200 },
+    'FRAN': { 3: 20, 4: 60, 5: 200 },
+    'ROBER': { 3: 20, 4: 60, 5: 200 },
+    'EVA': { 3: 20, 4: 60, 5: 200 },
+    'AURORA': { 3: 20, 4: 60, 5: 200 },
+    'ANTONIO': { 3: 20, 4: 60, 5: 200 },
+    'ISABEL': { 3: 20, 4: 60, 5: 200 },
+    'CARMEN': { 3: 20, 4: 60, 5: 200 }
 };
 
 // Ocultamos la declaración original
@@ -321,26 +321,35 @@ const strips = [
 
 // 20 Líneas de Pago Oficiales de Máquinas 5x4
 const PAYLINES_5x4 = [
+    // 1-4: Horizontales
     [{r:0,c:0},{r:0,c:1},{r:0,c:2},{r:0,c:3},{r:0,c:4}],
     [{r:1,c:0},{r:1,c:1},{r:1,c:2},{r:1,c:3},{r:1,c:4}],
     [{r:2,c:0},{r:2,c:1},{r:2,c:2},{r:2,c:3},{r:2,c:4}],
     [{r:3,c:0},{r:3,c:1},{r:3,c:2},{r:3,c:3},{r:3,c:4}],
-    [{r:0,c:0},{r:1,c:1},{r:2,c:2},{r:3,c:3},{r:3,c:4}],
-    [{r:3,c:0},{r:2,c:1},{r:1,c:2},{r:0,c:3},{r:0,c:4}],
+    // 5-6: Diagonales principales (bajan o suben y rebotan al final)
+    [{r:0,c:0},{r:1,c:1},{r:2,c:2},{r:3,c:3},{r:2,c:4}],
+    [{r:3,c:0},{r:2,c:1},{r:1,c:2},{r:0,c:3},{r:1,c:4}],
+    // 7-8: V profundas
     [{r:0,c:0},{r:1,c:1},{r:2,c:2},{r:1,c:3},{r:0,c:4}],
     [{r:3,c:0},{r:2,c:1},{r:1,c:2},{r:2,c:3},{r:3,c:4}],
-    [{r:1,c:0},{r:0,c:1},{r:1,c:2},{r:2,c:3},{r:1,c:4}],
-    [{r:2,c:0},{r:3,c:1},{r:2,c:2},{r:1,c:3},{r:2,c:4}],
+    // 9-10: V cortas
     [{r:1,c:0},{r:2,c:1},{r:3,c:2},{r:2,c:3},{r:1,c:4}],
     [{r:2,c:0},{r:1,c:1},{r:0,c:2},{r:1,c:3},{r:2,c:4}],
-    [{r:0,c:0},{r:0,c:1},{r:1,c:2},{r:2,c:3},{r:2,c:4}],
-    [{r:3,c:0},{r:3,c:1},{r:2,c:2},{r:1,c:3},{r:1,c:4}],
-    [{r:1,c:0},{r:1,c:1},{r:2,c:2},{r:3,c:3},{r:3,c:4}],
-    [{r:2,c:0},{r:2,c:1},{r:1,c:2},{r:0,c:3},{r:0,c:4}],
+    // 11-12: Zigzags superiores e inferiores
     [{r:0,c:0},{r:1,c:1},{r:0,c:2},{r:1,c:3},{r:0,c:4}],
     [{r:3,c:0},{r:2,c:1},{r:3,c:2},{r:2,c:3},{r:3,c:4}],
+    // 13-14: Zigzags centrales
     [{r:1,c:0},{r:2,c:1},{r:1,c:2},{r:2,c:3},{r:1,c:4}],
-    [{r:2,c:0},{r:1,c:1},{r:2,c:2},{r:1,c:3},{r:2,c:4}]
+    [{r:2,c:0},{r:1,c:1},{r:2,c:2},{r:1,c:3},{r:2,c:4}],
+    // 15-16: Ondas invertidas
+    [{r:1,c:0},{r:0,c:1},{r:1,c:2},{r:2,c:3},{r:3,c:4}],
+    [{r:2,c:0},{r:3,c:1},{r:2,c:2},{r:1,c:3},{r:0,c:4}],
+    // 17-18: Sombreros y valles truncados
+    [{r:1,c:0},{r:1,c:1},{r:0,c:2},{r:1,c:3},{r:1,c:4}],
+    [{r:2,c:0},{r:2,c:1},{r:3,c:2},{r:2,c:3},{r:2,c:4}],
+    // 19-20: Escaleras asimétricas
+    [{r:0,c:0},{r:0,c:1},{r:1,c:2},{r:2,c:3},{r:3,c:4}],
+    [{r:3,c:0},{r:3,c:1},{r:2,c:2},{r:1,c:3},{r:0,c:4}]
 ];
 
 // -------------------------------------------------------------
@@ -598,7 +607,7 @@ function renderSpectatorSpin(spinData) {
 // SÍMBOLOS Y RODILLOS 5x4
 // -------------------------------------------------------------
 function getRandomSymbol() {
-    let mayteProb = isFreeSpinsMode ? 1 : 4;
+    let mayteProb = isFreeSpinsMode ? 1 : 5;
     const dynamicSymbols = SYMBOLS.map(s => {
         if (s.id === 'MAYTE') return { ...s, prob: mayteProb };
         return s;
@@ -1001,7 +1010,7 @@ async function checkResults() {
         if (matchCount >= 3) {
             if (PAYTABLE[targetSym] && PAYTABLE[targetSym][matchCount] > 0) {
                 let basePoints = PAYTABLE[targetSym][matchCount];
-                let linePoints = Math.round(basePoints * (currentBet / 5));
+                let linePoints = Math.round(basePoints * (currentBet / 20));
                 linePoints = linePoints * multiplierBonus; // Aplica el multiplicador x2 de Mayte
 
                 totalWinPts += linePoints;
@@ -1235,7 +1244,7 @@ async function startFireShotPyramidBonus(initialBalls) {
 
         await new Promise(r => setTimeout(r, 650));
 
-        let newBallAdded = Math.random() < 0.60;
+        let newBallAdded = Math.random() < 0.35;
         if (newBallAdded) {
             playCoinSound();
             bonusRespinsLeft = 3;
@@ -1253,8 +1262,30 @@ async function startFireShotPyramidBonus(initialBalls) {
         }
 
         if (bonusRespinsLeft <= 0) {
-            tickerEl.textContent = `¡FIN DEL BONUS! PREMIO TOTAL GANADO: +${totalBonusAccum} CR`;
-            playWinSound();
+            let jackpotsWon = 0;
+            ['minor', 'major', 'grand', 'super', 'mega0', 'mega1', 'mega2'].forEach(k => {
+                const row = pyramidRowsData[k];
+                if (row && row.cells.length > 0) {
+                    const allFilled = row.cells.every(c => c.classList.contains('has-ball'));
+                    if (allFilled) {
+                        const multi = currentBet / 20;
+                        const rowPrize = k.startsWith('mega') ? superJackpotAccum*multi : (row.jp * multi);
+                        if (rowPrize > 0) {
+                            jackpotsWon += rowPrize;
+                        }
+                    }
+                }
+            });
+            totalBonusAccum += jackpotsWon;
+            
+            if (jackpotsWon > 0) {
+                tickerEl.textContent = `¡FIN DEL BONUS! ¡JACKPOTS GANADOS: +${jackpotsWon} CR! TOTAL: +${totalBonusAccum} CR`;
+                playBigWinSound();
+            } else {
+                tickerEl.textContent = `¡FIN DEL BONUS! PREMIO TOTAL GANADO: +${totalBonusAccum} CR`;
+                playWinSound();
+            }
+
 
             setTimeout(() => {
                 isBonusMode = false;
