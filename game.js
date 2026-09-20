@@ -13,9 +13,9 @@ function isAnyAdminPassword(pass) {
 
 // Configuración de Símbolos y Jerarquía Personalizada
 const SYMBOLS = [
-    { id: 'MARY', label: 'MARY', prob: 7, multi: 0, type: 'wild' }, // Comodín
+    { id: 'MARY', label: 'MARY', prob: 10, multi: 0, type: 'wild' }, // Comodín
     { id: 'RAFAEL', label: 'RAFAEL', prob: 18, multi: 0, type: 'fireshot' }, // Bola de fuego
-    { id: 'MAYTE', label: 'MAYTE', prob: 5, multi: 0, type: 'flower' }, // Scatter
+    { id: 'MAYTE', label: 'MAYTE', prob: 7.2, multi: 0, type: 'flower' }, // Scatter
     { id: 'CHARI', label: 'CHARI', prob: 21, multi: 0, type: 'std' }, 
     { id: 'SUSANA', label: 'SUSANA', prob: 21, multi: 0, type: 'std' }, 
     { id: 'FRAN', label: 'FRAN', prob: 21, multi: 0, type: 'std' }, 
