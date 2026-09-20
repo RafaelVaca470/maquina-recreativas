@@ -2573,9 +2573,8 @@ function openPlayerHistoryModal(user) {
     modal.classList.remove('hidden');
     
     const closeBtn = document.getElementById('btn-close-history');
-    if (closeBtn) {
-        closeBtn.onclick = () => {
-            modal.classList.add('hidden');
-        };
-    }
+    if (closeBtn) closeBtn.onclick = () => modal.classList.add('hidden');
+    
+    const closeBtnBottom = document.getElementById('btn-close-history-bottom');
+    if (closeBtnBottom) closeBtnBottom.onclick = () => modal.classList.add('hidden');
 }
