@@ -702,14 +702,19 @@ async function startServer() {
       const remoteLogs = await db.collection('logs').findOne({ _id: 'logs' });
       if (remoteLogs) logs = remoteLogs.data || []; else logs = readJSON(LOGS_FILE, logs);
       
-      // Sobrescribir writeJSON para que sincronice tambin con Mongo en segundo plano
+            // Sobrescribir writeJSON para que sincronice tambin con Mongo en segundo plano
       const originalWrite = writeJSON;
+      let updateTimeouts = {};
       writeJSON = function(file, data) {
         originalWrite(file, data);
         if (db) {
-           if (file === STATE_FILE) db.collection('state').updateOne({ _id: 'state' }, { $set: data }, { upsert: true }).catch(console.error);
-           if (file === USERS_FILE) db.collection('users').updateOne({ _id: 'users' }, { $set: data }, { upsert: true }).catch(console.error);
-           if (file === LOGS_FILE) db.collection('logs').updateOne({ _id: 'logs' }, { $set: { data } }, { upsert: true }).catch(console.error);
+           if (updateTimeouts[file]) clearTimeout(updateTimeouts[file]);
+           updateTimeouts[file] = setTimeout(() => {
+               const dataCopy = JSON.parse(JSON.stringify(data));
+               if (file === STATE_FILE) db.collection('state').updateOne({ _id: 'state' }, { $set: dataCopy }, { upsert: true }).catch(console.error);
+               if (file === USERS_FILE) db.collection('users').updateOne({ _id: 'users' }, { $set: dataCopy }, { upsert: true }).catch(console.error);
+               if (file === LOGS_FILE) db.collection('logs').updateOne({ _id: 'logs' }, { $set: { data: dataCopy } }, { upsert: true }).catch(console.error);
+           }, 100);
         }
       };
     } catch(e) { console.error('Error MongoDB:', e); }
