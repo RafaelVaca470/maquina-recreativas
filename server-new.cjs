@@ -101,7 +101,7 @@ function checkTurnTimeout() {
         if (users[userKey]) {
             users[userKey].credits = Number(machineState.currentMachineBalance) || 0;
             users[userKey].lastSeen = new Date().toISOString();
-            writeJSON(USERS_FILE, users);
+            // Removed redundant writeJSON(USERS_FILE)
             addLog(
                 machineState.activeUser,
                 machineState.isPaused ? 'FIN PAUSA - SALDO GUARDADO' : 'INACTIVIDAD - SALDO GUARDADO',
@@ -240,8 +240,8 @@ const server = http.createServer(async (req, res) => {
 
         users[userKey] = {
             username: rawNick,
-            city: city || 'No especificada',
-            zip: zip || '00000',
+            city: city,
+            zip: zip,
             pin: pin,
             credits: 0,
             bank: 0,
@@ -249,7 +249,7 @@ const server = http.createServer(async (req, res) => {
             registeredAt: new Date().toISOString(),
             lastSeen: new Date().toISOString()
         };
-        writeJSON(USERS_FILE, users);
+        // Removed redundant writeJSON(USERS_FILE)
         addLog(rawNick, 'REGISTRO', 0, 0, `Nuevo amigo registrado desde ${city} (${zip})`);
 
         return sendJSON(res, 200, { ok: true, user: users[userKey] });
@@ -450,7 +450,7 @@ const server = http.createServer(async (req, res) => {
             if (users[userKey]) {
                 users[userKey].credits = finalBalance;
                 users[userKey].lastSeen = new Date().toISOString();
-                writeJSON(USERS_FILE, users);
+                // Removed redundant writeJSON
             }
 
             addLog(username, 'DEJAR MÁQUINA', finalBalance, finalBalance, 'El jugador deja la máquina voluntariamente. Saldo guardado.');
@@ -560,7 +560,7 @@ const server = http.createServer(async (req, res) => {
 
         users[userKey].credits = (users[userKey].credits || 0) + amount;
     users[userKey].totalDeposited = (users[userKey].totalDeposited || 0) + amount;
-        writeJSON(USERS_FILE, users);
+        // Removed redundant writeJSON
 
         // Si es el usuario que está jugando ahora mismo, actualizar saldo de la máquina
         if (machineState.activeUser && machineState.activeUser.toLowerCase() === userKey) {
@@ -592,7 +592,7 @@ const server = http.createServer(async (req, res) => {
     users[userKey].credits = 0;
         users[userKey].bank = 0;
         users[userKey].points = 0;
-        writeJSON(USERS_FILE, users);
+        // Removed redundant writeJSON
 
         if (machineState.activeUser && machineState.activeUser.toLowerCase() === userKey) {
             machineState.currentMachineBalance = 0;
@@ -616,7 +616,7 @@ const server = http.createServer(async (req, res) => {
             const uKey = prevActive.toLowerCase();
             if (users[uKey]) {
                 users[uKey].credits = Number(machineState.currentMachineBalance) || 0;
-                writeJSON(USERS_FILE, users);
+                // Removed redundant writeJSON
             }
             addLog(prevActive, 'LIBERACIÓN FORZOSA', machineState.currentMachineBalance, machineState.currentMachineBalance, 'Liberación forzosa por Administrador');
         }
@@ -652,7 +652,7 @@ const server = http.createServer(async (req, res) => {
         }
 
         users[userKey].pin = newPin;
-        writeJSON(USERS_FILE, users);
+        // Removed redundant writeJSON
         addLog(users[userKey].username, 'CAMBIO PIN ADMIN', 0, users[userKey].credits, `PIN de ${users[userKey].username} actualizado a ${newPin} por Administrador`);
 
         return sendJSON(res, 200, { ok: true, message: `PIN de ${users[userKey].username} actualizado a ${newPin}`, pin: newPin });
@@ -702,19 +702,15 @@ async function startServer() {
       const remoteLogs = await db.collection('logs').findOne({ _id: 'logs' });
       if (remoteLogs) logs = remoteLogs.data || []; else logs = readJSON(LOGS_FILE, logs);
       
-            // Sobrescribir writeJSON para que sincronice tambin con Mongo en segundo plano
+                        // Sobrescribir writeJSON para que sincronice tambin con Mongo en segundo plano
       const originalWrite = writeJSON;
-      let updateTimeouts = {};
       writeJSON = function(file, data) {
         originalWrite(file, data);
         if (db) {
-           if (updateTimeouts[file]) clearTimeout(updateTimeouts[file]);
-           updateTimeouts[file] = setTimeout(() => {
-               const dataCopy = JSON.parse(JSON.stringify(data));
-               if (file === STATE_FILE) db.collection('state').updateOne({ _id: 'state' }, { $set: dataCopy }, { upsert: true }).catch(console.error);
-               if (file === USERS_FILE) db.collection('users').updateOne({ _id: 'users' }, { $set: dataCopy }, { upsert: true }).catch(console.error);
-               if (file === LOGS_FILE) db.collection('logs').updateOne({ _id: 'logs' }, { $set: { data: dataCopy } }, { upsert: true }).catch(console.error);
-           }, 100);
+           const dataCopy = JSON.parse(JSON.stringify(data));
+           if (file === STATE_FILE) db.collection('state').updateOne({ _id: 'state' }, { $set: dataCopy }, { upsert: true }).catch(console.error);
+           if (file === USERS_FILE) db.collection('users').updateOne({ _id: 'users' }, { $set: dataCopy }, { upsert: true }).catch(console.error);
+           if (file === LOGS_FILE) db.collection('logs').updateOne({ _id: 'logs' }, { $set: { data: dataCopy } }, { upsert: true }).catch(console.error);
         }
       };
     } catch(e) { console.error('Error MongoDB:', e); }
