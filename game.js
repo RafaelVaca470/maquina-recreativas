@@ -1203,7 +1203,7 @@ function endFreeSpins() {
 let bonusRespinsLeft = 3;
 let pyramidRowsData = {
     minor: { target: 2, cells: [], jp: 500 },
-    major: { target: 3, cells: [], jp: 1250 },
+    major: { target: 3, cells: [], jp: 1260 },
     grand: { target: 4, cells: [], jp: 2500 },
     super: { target: 5, cells: [], jp: 26940 },
     mega0: { target: 5, cells: [], jp: 0 },
