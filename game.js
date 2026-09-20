@@ -965,14 +965,7 @@ async function checkResults() {
     // 2. Minijuego Flores de Mayte (3 o más)
     if (mayteCount >= 3) {
         playFireShotJingle();
-        // Pago directo Scatter
-        let scatterWin = 0;
-        if (mayteCount === 3) scatterWin = currentBet * 3;
-        else if (mayteCount === 4) scatterWin = currentBet * 10;
-        else if (mayteCount >= 5) scatterWin = currentBet * 50;
         
-        currentWonAmount += scatterWin;
-        if(scatterWin > 0) tickerEl.textContent = `¡PREMIO MAYTE: +${scatterWin} CR!`;
 
         if (isFreeSpinsMode) {
             freeSpinsTotal += 10;
@@ -1395,7 +1388,7 @@ function buildPaytable() {
     let html = `
         <p style="color: #ffea75; font-weight: bold; margin-bottom: 8px;">★ TABLA DE PREMIOS (EN CRÉDITOS PARA APUESTA 20 CR) ★</p>
         <ul style="list-style: none; padding: 0; line-height: 1.8;">
-            <li>🌸🌸🌸 <strong style="color:#ff80b3;">MAYTE</strong>: 3x (15 CR) &nbsp;|&nbsp; 4x (50 CR) &nbsp;|&nbsp; 5x (250 CR)</li>
+            <li>🌸🌸🌸 <strong style="color:#ff80b3;">MAYTE</strong>: 3+ Símbolos activan 10 Juegos Gratis</li>
             <li><strong style="color:#ff33bb;">CHARI</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
             <li><strong style="color:#a3ffcf;">SUSANA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
             <li><strong style="color:#b3d9ff;">FRAN</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
