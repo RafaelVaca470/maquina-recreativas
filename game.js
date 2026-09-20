@@ -1097,7 +1097,7 @@ function drawWinningLines(winningLines) {
 
         polyline.setAttribute('points', points);
         polyline.setAttribute('stroke', wl.color);
-        polyline.setAttribute('stroke-width', '4');
+        polyline.setAttribute('stroke-width', '1.5');
         polyline.setAttribute('fill', 'none');
         polyline.setAttribute('stroke-linecap', 'round');
         polyline.setAttribute('stroke-linejoin', 'round');
