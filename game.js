@@ -717,7 +717,7 @@ function buildReels(initial = false) {
         let i = 0;
         while (i < numSymbols) {
             // Probabilidad del 45% de insertar un Súper Bloque del Símbolo de la Suerte
-            let isLuckyStack = (isFreeSpinsMode && Math.random() < 0.45);
+            let isLuckyStack = (isFreeSpinsMode && Math.random() < 0.2);
             let symData = isLuckyStack ? luckySymbol : getRandomSymbol();
             
             // Si es luckyStack, el tamaño será de 3 a 5 casillas (para llenar la pantalla visualmente)
