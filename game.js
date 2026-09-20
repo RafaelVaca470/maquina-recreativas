@@ -29,16 +29,16 @@ const SYMBOLS = [
 
 // Tabla de Pagos Base (x Apuesta de 20 Créditos). Para otras apuestas, se ajusta proporcionalmente.
 const PAYTABLE = {
-    'MARY': { 3: 0, 4: 0, 5: 10000 }, // 10000 CRÉDITOS en apuesta de 20
-    'SUSANA': { 3: 60, 4: 200, 5: 800 }, // Susana se mantiene especial
-    'CHARI': { 3: 20, 4: 60, 5: 200 },
-    'FRAN': { 3: 20, 4: 60, 5: 200 },
-    'ROBER': { 3: 20, 4: 60, 5: 200 },
-    'EVA': { 3: 20, 4: 60, 5: 200 },
-    'AURORA': { 3: 20, 4: 60, 5: 200 },
-    'ANTONIO': { 3: 20, 4: 60, 5: 200 },
-    'ISABEL': { 3: 20, 4: 60, 5: 200 },
-    'CARMEN': { 3: 20, 4: 60, 5: 200 }
+    'MARY': { 3: 0, 4: 0, 5: 0 }, 
+    'SUSANA': { 3: 40, 4: 100, 5: 250 }, 
+    'CHARI': { 3: 10, 4: 30, 5: 100 },
+    'FRAN': { 3: 10, 4: 30, 5: 100 },
+    'ROBER': { 3: 10, 4: 30, 5: 100 },
+    'EVA': { 3: 10, 4: 30, 5: 100 },
+    'AURORA': { 3: 10, 4: 30, 5: 100 },
+    'ANTONIO': { 3: 10, 4: 30, 5: 100 },
+    'ISABEL': { 3: 10, 4: 30, 5: 100 },
+    'CARMEN': { 3: 10, 4: 30, 5: 100 }
 };
 
 // Ocultamos la declaración original
@@ -999,7 +999,7 @@ async function checkResults() {
         }
         
         // Si toda la línea es de comodines
-        if (!targetSym) targetSym = 'MARY';
+        if (!targetSym) targetSym = 'CHARI'; // Paga como un nombre normal cualquiera
 
         let matchCount = 0;
         for (let s of lineSymbols) {
@@ -1389,15 +1389,9 @@ function buildPaytable() {
         <p style="color: #ffea75; font-weight: bold; margin-bottom: 8px;">★ TABLA DE PREMIOS (EN CRÉDITOS PARA APUESTA 20 CR) ★</p>
         <ul style="list-style: none; padding: 0; line-height: 1.8;">
             <li>🌸🌸🌸 <strong style="color:#ff80b3;">MAYTE</strong>: 3+ Símbolos activan 10 Juegos Gratis</li>
-            <li><strong style="color:#ff33bb;">CHARI</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#a3ffcf;">SUSANA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#b3d9ff;">FRAN</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#c2d4ff;">ROBER</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#ffd1b3;">EVA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#ffb3d9;">AURORA</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#ffe0b3;">ANTONIO</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#e6b3e6;">ISABEL</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
-            <li><strong style="color:#b3f7ff;">CARMEN</strong>: 3x (5 CR) &nbsp;|&nbsp; 4x (10 CR) &nbsp;|&nbsp; 5x (25 CR)</li>
+            <li>👑 <strong style="color:#ffd700;">MARY</strong>: COMODÍN (Sustituye a cualquier nombre)</li>
+            <li><strong style="color:#a3ffcf;">SUSANA</strong>: 3x (40 CR) &nbsp;|&nbsp; 4x (100 CR) &nbsp;|&nbsp; 5x (250 CR)</li>
+            <li><strong style="color:#ff33bb;">CHARI, FRAN, ROBER, EVA, AURORA, ANTONIO, ISABEL, CARMEN</strong>: 3x (10 CR) &nbsp;|&nbsp; 4x (30 CR) &nbsp;|&nbsp; 5x (100 CR)</li>
         </ul>
         <br>
         <p>👑 <strong style="color:#ffd700;">MARY (COMODÍN):</strong> Actúa como comodín y asume el premio del nombre al que sustituye.</p>
