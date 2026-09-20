@@ -2534,6 +2534,7 @@ function openPlayerHistoryModal(user) {
     if (!modal) return;
     
     document.getElementById('hist-player-name').textContent = user.username;
+    if(document.getElementById('hist-current-balance')) document.getElementById('hist-current-balance').textContent = Math.round(user.credits || 0) + ' CR';
     document.getElementById('hist-total-in').textContent = (user.totalDeposited || 0) + ' CR';
     document.getElementById('hist-total-out').textContent = (user.totalCashedOut || 0) + ' CR';
     document.getElementById('hist-net').textContent = ((user.totalDeposited || 0) - (user.totalCashedOut || 0)) + ' CR';
