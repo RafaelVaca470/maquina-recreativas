@@ -1939,6 +1939,15 @@ body {
     animation: ballPulsate 1.5s infinite alternate;
 }
 
+/* Ajuste para que la bola de fuego encaje perfectamente en las casillas pequeñas de la pirámide */
+.p-cell .sym-fireshot-rafael {
+    width: 62px !important;
+    height: 85px !important;
+    transform: scale(0.62);
+    transform-origin: center;
+    position: absolute; /* Para que quede centrada en el flex del padre */
+}
+
 /* ANIMACIÓN DE GIRO DE RODILLO EN LA CASILLA VACÍA */
 .p-cell.cell-spinning {
     border-color: #ffaa00 !important;
