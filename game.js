@@ -2165,7 +2165,10 @@ function setupEventListeners() {
                             <span class="admin-user-pin-badge" title="PIN personal de este usuario">🔑 PIN: <strong>${u.pin || '1234'}</strong></span>
                             <button type="button" class="btn-mini-action btn-change-pin-btn" data-user="${u.username}" title="Cambiar PIN a este amigo">✏️ Cambiar</button>
                         </div>
-                        <span class="admin-user-cred">${Math.round(u.credits || 0).toLocaleString('es-ES')} CR</span>
+                        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                            <span class="admin-user-cred">${Math.round(u.credits || 0).toLocaleString('es-ES')} CR</span>
+                            <span style="font-size: 0.70rem; color: #ccc; margin-top: 4px; font-weight: normal; font-family: 'Inter', sans-serif;">Mete: <span style="color:#00ff00">${u.totalDeposited || 0}</span> | Saca: <span style="color:#ff3333">${u.totalCashedOut || 0}</span> | Neto: <span style="color:#ffea75">${(u.totalDeposited || 0) - (u.totalCashedOut || 0)}</span></span>
+                        </div>
                     `;
                     const changeBtn = row.querySelector('.btn-change-pin-btn');
                     if (changeBtn) {
@@ -2202,26 +2205,20 @@ function setupEventListeners() {
                 });
             }
 
-            // Renderizar Historial / Auditoría
-            if (adminLogsContainer) {
-                adminLogsContainer.innerHTML = '';
-                if (!data.logs.length) {
-                    adminLogsContainer.innerHTML = '<p class="hint-text">No hay movimientos registrados.</p>';
-                } else {
-                    data.logs.forEach(l => {
-                        const item = document.createElement('div');
-                        item.className = 'log-item-row';
-                        const d = new Date(l.timestamp);
-                        const timeStr = `${d.getDate()}/${d.getMonth()+1} ${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`;
-                        item.innerHTML = `
-                            <span class="log-time">${timeStr}</span>
-                            <span class="log-user">${l.user}</span>
-                            <span class="log-act">${l.action}</span>
-                            <span class="log-amount">${l.amount ? '+' + l.amount : ''}</span>
-                        `;
-                        adminLogsContainer.appendChild(item);
-                    });
-                }
+                        // Renderizar Estadísticas Globales
+            const statIn = document.getElementById('global-stat-in');
+            const statOut = document.getElementById('global-stat-out');
+            const statNet = document.getElementById('global-stat-net');
+            if (statIn && statOut && statNet) {
+                let globalIn = 0;
+                let globalOut = 0;
+                data.users.forEach(u => {
+                    globalIn += (u.totalDeposited || 0);
+                    globalOut += (u.totalCashedOut || 0);
+                });
+                statIn.textContent = globalIn + ' CR';
+                statOut.textContent = globalOut + ' CR';
+                statNet.textContent = (globalIn - globalOut) + ' CR';
             }
         } catch(e) {}
     }
