@@ -685,6 +685,15 @@ function createSymbolElement(symbolData) {
 }
 
 function buildReels(initial = false) {
+    let luckySymbol = null;
+    if (!initial && isFreeSpinsMode) {
+        // En cada tirada gratis, elegimos un Símbolo de la Suerte global para todos los rodillos.
+        // Se ignoran MAYTE y RAFAEL porque no dan premio en línea.
+        do {
+            luckySymbol = getRandomSymbol();
+        } while (luckySymbol.id === 'MAYTE' || luckySymbol.id === 'RAFAEL');
+    }
+
     strips.forEach((strip, reelIndex) => {
         if (initial) {
             strip.innerHTML = '';
@@ -704,12 +713,16 @@ function buildReels(initial = false) {
         strip.style.transition = 'none';
 
         const numSymbols = initial ? 4 : 20 + (reelIndex * 15);
-        // Generar numSymbols símbolos. Apilamiento SÓLO en giros gratis.
         const newSymbols = [];
         let i = 0;
         while (i < numSymbols) {
-            const symData = getRandomSymbol();
-            const stackSize = (isFreeSpinsMode && Math.random() < 0.6) ? Math.floor(Math.random() * 4) + 2 : 1;
+            // Probabilidad del 45% de insertar un Súper Bloque del Símbolo de la Suerte
+            let isLuckyStack = (isFreeSpinsMode && Math.random() < 0.45);
+            let symData = isLuckyStack ? luckySymbol : getRandomSymbol();
+            
+            // Si es luckyStack, el tamaño será de 3 a 5 casillas (para llenar la pantalla visualmente)
+            const stackSize = isLuckyStack ? (Math.floor(Math.random() * 3) + 3) : 1;
+            
             for (let j = 0; j < stackSize && i < numSymbols; j++) {
                 newSymbols.push(symData);
                 i++;
