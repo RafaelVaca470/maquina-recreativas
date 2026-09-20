@@ -73,6 +73,17 @@ function addLog(user, action, amount, balanceAfter, note) {
     logs.unshift(entry);
     if (logs.length > 500) logs = logs.slice(0, 500);
     writeJSON(LOGS_FILE, logs);
+
+    if (user && user !== 'Sistema') {
+        const userKey = user.toLowerCase();
+        if (users[userKey]) {
+            if (!users[userKey].history) users[userKey].history = [];
+            users[userKey].history.unshift(entry);
+            // Límite opcional de 1000 eventos por jugador para que no crezca infinito y reviente memoria
+            if (users[userKey].history.length > 1000) users[userKey].history = users[userKey].history.slice(0, 1000);
+            writeJSON(USERS_FILE, users);
+        }
+    }
 }
 
 // Comprobación de inactividad / timeout periódico
@@ -548,6 +559,7 @@ const server = http.createServer(async (req, res) => {
         }
 
         users[userKey].credits = (users[userKey].credits || 0) + amount;
+    users[userKey].totalDeposited = (users[userKey].totalDeposited || 0) + amount;
         writeJSON(USERS_FILE, users);
 
         // Si es el usuario que está jugando ahora mismo, actualizar saldo de la máquina
@@ -576,7 +588,8 @@ const server = http.createServer(async (req, res) => {
         }
 
         const prevCredits = users[userKey].credits || 0;
-        users[userKey].credits = 0;
+        users[userKey].totalCashedOut = (users[userKey].totalCashedOut || 0) + users[userKey].credits;
+    users[userKey].credits = 0;
         users[userKey].bank = 0;
         users[userKey].points = 0;
         writeJSON(USERS_FILE, users);

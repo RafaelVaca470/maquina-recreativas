@@ -2526,3 +2526,55 @@ if (btnSpinDaily) {
         btnCloseDaily.classList.remove('hidden');
     });
 }
+
+
+function openPlayerHistoryModal(user) {
+    const modal = document.getElementById('player-history-modal');
+    if (!modal) return;
+    
+    document.getElementById('hist-player-name').textContent = user.username;
+    document.getElementById('hist-total-in').textContent = (user.totalDeposited || 0) + ' CR';
+    document.getElementById('hist-total-out').textContent = (user.totalCashedOut || 0) + ' CR';
+    document.getElementById('hist-net').textContent = ((user.totalDeposited || 0) - (user.totalCashedOut || 0)) + ' CR';
+    
+    const tbody = document.getElementById('hist-table-body');
+    tbody.innerHTML = '';
+    
+    const history = user.history || [];
+    if (history.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay actividad registrada aún.</td></tr>';
+    } else {
+        history.forEach(log => {
+            const tr = document.createElement('tr');
+            
+            // Format date
+            const d = new Date(log.timestamp);
+            const dateStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+            
+            // Amount format
+            let amountHtml = '-';
+            if (log.action.toLowerCase().includes('recarga') || log.action.toLowerCase().includes('deposita')) {
+                amountHtml = `<span style="color: #00ff00;">+${log.amount} CR</span>`;
+            } else if (log.action.toLowerCase().includes('retiro') || log.action.toLowerCase().includes('cobra')) {
+                amountHtml = `<span style="color: #ff3333;">-${log.amount} CR</span>`;
+            }
+            
+            tr.innerHTML = `
+                <td>${dateStr}</td>
+                <td>${log.action}</td>
+                <td>${amountHtml}</td>
+                <td>${log.balanceAfter} CR</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+    
+    modal.classList.remove('hidden');
+    
+    const closeBtn = document.getElementById('btn-close-history');
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            modal.classList.add('hidden');
+        };
+    }
+}
