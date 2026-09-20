@@ -2191,6 +2191,7 @@ function setupEventListeners() {
                     }
                     row.onclick = () => {
                         adminSelectUser.value = u.username;
+                        openPlayerHistoryModal(u);
                     };
                     adminUsersList.appendChild(row);
 
