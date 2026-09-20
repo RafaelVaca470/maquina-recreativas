@@ -1260,7 +1260,34 @@ async function startFireShotPyramidBonus(initialBalls) {
         bonusRespinsLeft--;
         bonusSpinsLeftEl.textContent = bonusRespinsLeft;
 
-        await new Promise(r => setTimeout(r, 650));
+        const emptyCells = [];
+        const order = ['minor', 'major', 'grand', 'super', 'mega0', 'mega1', 'mega2'];
+        for (let k of order) {
+            const row = pyramidRowsData[k];
+            if (!row) continue;
+            for (let cell of row.cells) {
+                if (!cell.classList.contains('has-ball')) emptyCells.push(cell);
+            }
+        }
+
+        const spinInterval = setInterval(() => {
+            emptyCells.forEach(cell => {
+                const tempVal = Math.floor(Math.random() * 10 + 1) * 100;
+                cell.innerHTML = `
+                    <div class="sym-fireshot-rafael" style="filter: blur(1.5px); opacity: 0.7; transform: translateY(${Math.random() > 0.5 ? '10px' : '-10px'});">
+                        <div class="fire-ball-sphere">
+                            <span class="fire-ball-rafael-text">RAFAEL</span>
+                        </div>
+                        <div class="fire-ball-prize">${tempVal} CR</div>
+                    </div>
+                `;
+            });
+        }, 80);
+
+        await new Promise(r => setTimeout(r, 1200));
+
+        clearInterval(spinInterval);
+        emptyCells.forEach(cell => cell.innerHTML = '');
 
         let newBallAdded = Math.random() < 0.35;
         if (newBallAdded) {
@@ -1354,8 +1381,9 @@ function placeBallInCell(cell, value) {
     cell.innerHTML = `
         <div class="sym-fireshot-rafael">
             <div class="fire-ball-sphere">
-                <span class="fire-ball-rafael-text${value >= 1000 ? ' sm' : ''}">${value}</span>
+                <span class="fire-ball-rafael-text${value >= 1000 ? ' sm' : ''}">RAFAEL</span>
             </div>
+            <div class="fire-ball-prize">${value} CR</div>
         </div>
     `;
 }
