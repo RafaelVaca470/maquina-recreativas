@@ -1163,7 +1163,9 @@ function endFreeSpins() {
     isFreeSpinsMode = false;
     freeSpinsCurrent = 0;
     freeSpinsTotal = 10;
-    fsLeftEl.parentElement.classList.add('hidden');
+    if (freeSpinsOverlay) freeSpinsOverlay.classList.add('hidden');
+    if (promoBadgesBar) promoBadgesBar.classList.remove('hidden');
+    if (reelFrameContainer) reelFrameContainer.classList.remove('mayte-spins-active');
     
     // Consolation prize
     if (freeSpinsTotalWon === 0) {
