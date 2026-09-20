@@ -2547,25 +2547,27 @@ function openPlayerHistoryModal(user) {
         tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:#888;">No hay actividad registrada aún.</td></tr>';
     } else {
         history.forEach(log => {
+            if (!log) return;
             const tr = document.createElement('tr');
             
             // Format date
-            const d = new Date(log.timestamp);
-            const dateStr = d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute:'2-digit', second:'2-digit' });
+            const d = log.timestamp ? new Date(log.timestamp) : new Date();
+            const dateStr = !isNaN(d.getTime()) ? (d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) + ' ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute:'2-digit', second:'2-digit' })) : '-';
             
             // Amount format
             let amountHtml = '-';
-            if (log.action.toLowerCase().includes('recarga') || log.action.toLowerCase().includes('deposita')) {
-                amountHtml = `<span style="color: #00ff00;">+${log.amount} CR</span>`;
-            } else if (log.action.toLowerCase().includes('retiro') || log.action.toLowerCase().includes('cobra')) {
-                amountHtml = `<span style="color: #ff3333;">-${log.amount} CR</span>`;
+            const actionStr = log.action ? String(log.action).toLowerCase() : '';
+            if (actionStr.includes('recarga') || actionStr.includes('deposita')) {
+                amountHtml = `<span style="color: #00ff00;">+${log.amount || 0} CR</span>`;
+            } else if (actionStr.includes('retiro') || actionStr.includes('cobra')) {
+                amountHtml = `<span style="color: #ff3333;">-${log.amount || 0} CR</span>`;
             }
             
             tr.innerHTML = `
                 <td>${dateStr}</td>
-                <td>${log.action}</td>
+                <td>${log.action || 'Desconocido'}</td>
                 <td>${amountHtml}</td>
-                <td>${log.balanceAfter} CR</td>
+                <td>${log.balanceAfter || 0} CR</td>
             `;
             tbody.appendChild(tr);
         });
