@@ -684,7 +684,7 @@ const server = http.createServer(async (req, res) => {
 });
 
 async function startServer() {
-  const MONGODB_URI = "mongodb+srv://rvacarmo_db_user:utJH79FOYsvsFo2t@recreativa.fukrjf6.mongodb.net/?appName=Recreativa";
+  const MONGODB_URI = process.env.MONGODB_URI || "mongodb+srv://rvacarmo_db_user:utJH79FOYsvsFo2t@recreativa.fukrjf6.mongodb.net/?appName=Recreativa";
   let db = null;
   if (MONGODB_URI) {
     try {
@@ -694,15 +694,14 @@ async function startServer() {
       console.log('Conectado a MongoDB');
       
       const remoteState = await db.collection('state').findOne({ _id: 'state' });
-      if (remoteState) machineState = remoteState; else machineState = readJSON(STATE_FILE, machineState);
+      if (remoteState) { delete remoteState._id; Object.assign(machineState, remoteState); } else { Object.assign(machineState, readJSON(STATE_FILE, machineState)); }
       
       const remoteUsers = await db.collection('users').findOne({ _id: 'users' });
-      if (remoteUsers) users = remoteUsers; else users = readJSON(USERS_FILE, users);
+      if (remoteUsers) { delete remoteUsers._id; Object.assign(users, remoteUsers); } else { Object.assign(users, readJSON(USERS_FILE, users)); }
       
       const remoteLogs = await db.collection('logs').findOne({ _id: 'logs' });
-      if (remoteLogs) logs = remoteLogs.data || []; else logs = readJSON(LOGS_FILE, logs);
+      if (remoteLogs && remoteLogs.data) logs.splice(0, logs.length, ...remoteLogs.data); else { const localLogs = readJSON(LOGS_FILE, logs); logs.splice(0, logs.length, ...localLogs); }
       
-                        // Sobrescribir writeJSON para que sincronice tambin con Mongo en segundo plano
       const originalWrite = writeJSON;
       writeJSON = function(file, data) {
         originalWrite(file, data);
